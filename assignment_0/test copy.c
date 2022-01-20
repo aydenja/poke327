@@ -30,6 +30,16 @@ int possibleMove (int y, int x, int path[25], int pLength){
 	}
 }
 
+int hasMove (int posY, int posX, int path[25], int pLength){
+	int i;
+	for(i=0; i<8; i++){
+		if(possibleMove(posY + yMove[i], posX + xMove[i], path, pLength) == 1){
+			return 1;
+		}
+	}
+	return 0;
+}
+
 void printOutput (int path [25]){
 	int i;
 	for (i=0; i<25; i++){
@@ -45,10 +55,17 @@ void findTours (int  visited [5][5], int  path [25],
 	//printf("visited %d, %d\nPath:", posY, posX);
 	visited[posY][posX] = 1;
 
-	if(pLength == 25){
-		printOutput(path);
-		count++;
-		printf("%d\n", count);
+	if(hasMove(posY, posX, path, pLength) == 0){
+		
+		//printf("found\n");
+		if (pLength == 25){
+			printOutput(path);
+			count++;
+			printf("%d \n", count);
+		}
+		else{
+			return; 
+		}
 	}
 	else{
 		int i;
