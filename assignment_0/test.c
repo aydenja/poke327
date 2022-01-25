@@ -3,14 +3,11 @@
 #define LENGTH 5
 #define WIDTH 5
 
-/*
-Defines the possible set of moves for a knight at a given space
-*/
+//Defines the possible set of moves for a knight at a given space
 int xMove[8] = { 2, 1, -1, -2, -2, -1, 1, 2 };
 int yMove[8] = { 1, 2, 2, 1, -1, -2, -2, -1 }; 
 
 int count = 0;
-
 
 int possibleMove (int y, int x, int path[25], int pLength){
 	//If the move is within the bounds, and has not been visited
@@ -37,14 +34,10 @@ void printOutput (int path [25]){
 	printf("%d\n", path[24]+1);
 }
 
-
 void findTours (int  path [25], int posY, int posX, int pLength) {
 	//We found a solution once path length is 25
 	if(pLength == 25){
 		printOutput(path);
-		//TODO: Remove in final version.
-		count++;
-		printf("%d\n", count);
 	}
 	else{
 		int i;
@@ -57,9 +50,7 @@ void findTours (int  path [25], int posY, int posX, int pLength) {
 			}
 		}
 	}
-
 }
-
 
 int main(int argc, char const *argv[]){
 	int i;
