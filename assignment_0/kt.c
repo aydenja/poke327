@@ -29,7 +29,7 @@ int possibleMove (int y, int x, int path[25], int pLength){
 void printOutput (int path [25]){
 	int i;
 	for (i=0; i<24; i++){
-		printf("%d, ", path[i]+1);
+		printf("%d,", path[i]+1);
 	}
 	printf("%d\n", path[24]+1);
 }

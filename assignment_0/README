@@ -1,0 +1,1 @@
+This program finds all of the knights tours on a 5x5 chess board using a recursive backtracking algorithm. The program prints the output to the terminal where each number corresponds to a "square" on the board.

@@ -1,5 +1,5 @@
-test: test.c
-	gcc test.c -Wall -Werror -o test
+kt: kt.c
+	gcc kt.c -Wall -Werror -o kt
 
 clean:
-	rm -f *~ test
+	rm -f *~ kt
