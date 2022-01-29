@@ -122,12 +122,27 @@ void fill_path(){
 	end = (rand() % WIDTH/2) + WIDTH/4;
 	mid = (rand() % HEIGHT/2) + HEIGHT/4;
 
-	while (abs(start-end)<3){
+	while (abs(start-end)<15){
 		start = (rand() % WIDTH/2) + WIDTH/4;
 		end = (rand() % WIDTH/2) + WIDTH/4;
 	}
+	printf("%d\n", abs(start-end));
 
+	map[0][start] = '#';
+	map[HEIGHT-1][end] = '#';
 
+	for(i=1; i<mid; i++){
+		map[i][start] = '#';
+	}
+	for(i=WIDTH-1; i>mid; i--){
+		map[i][end] = '#';
+	}
+
+	min = f_min(start,end);
+	max = f_max(start, end);
+	for(i=min; i<max+1; i++){
+		map[mid][i] = '#';
+	}
 
 }
 
