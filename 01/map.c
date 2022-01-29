@@ -134,7 +134,7 @@ void fill_path(){
 	for(i=1; i<mid; i++){
 		map[i][start] = '#';
 	}
-	for(i=WIDTH-1; i>mid; i--){
+	for(i=HEIGHT-1; i>mid; i--){
 		map[i][end] = '#';
 	}
 
