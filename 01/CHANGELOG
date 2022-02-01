@@ -1,0 +1,4 @@
+1/29: Started assignment, implemented borders, random generation of tall grass regions as well as clearings, tall grass regions are smaller than clearings but take priority over placement
+1/30: Implemented the fill_path function and refactored code to fill_border and fill_grass in separate functions
+1/31: Implemented path generation
+2/1: Implemented optional terrain, trees, rocks. Implemented random placement of buildings along path.

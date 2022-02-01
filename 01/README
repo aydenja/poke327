@@ -1,4 +1,1 @@
-1/29: Started assignment, implemented borders, random generation of tall grass regions as well as clearings, tall grass regions are smaller than clearings but take priority over placement
-1/30: Implemented the fill_path function and refactored code to fill_border and fill_grass in separate functions
-1/31: Implemented path generation
-2/1: Implemented optional terrain, trees, rocks. Implemented random placement of buildings along path.
+This program randomly generates the terrain for a pokemon inspired game. The map that it generates is 80x21 and it outputs the map to the terminal. The map contains 4 regions. 2 tall grass represented by ':', and 2 clearings represented by '.'. Clearings may also have rocks '%' and trees '^'. The map also contains two paths, one that runs N-S and one that runs E-W represented by '#'. Finally the map places two buildings, a pokecenter 'C' and pokemart 'M', along one of the paths. 
