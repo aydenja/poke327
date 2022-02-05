@@ -8,6 +8,7 @@
 #include <limits.h>
 #include <sys/time.h>
 #include <assert.h>
+#include <math.h>
 
 #include "heap.h"
 
@@ -674,8 +675,37 @@ static int new_map(map_t *world[WORLD_DIM][WORLD_DIM],int y, int x)
   place_boulders(world[y][x]);
   place_trees(world[y][x]);
   build_paths(world[y][x]);
-  place_pokemart(world[y][x]);
-  place_center(world[y][x]);
+
+  double dx = abs((x-199)*(x-199));
+  double dy = abs((y-199)*(y-199));
+  double d = sqrt(dy+dx);
+
+  int val = (int)((-45*d/200)+50);
+
+  int p_mart;
+  if (rand()%100+1 < val){
+    p_mart =1;
+  }
+  else{
+    p_mart =0;
+  }
+
+  int p_center;
+  if (rand()%100+1 < val){
+    p_center =1;
+  }
+  else{
+    p_center =0;
+  }
+
+
+  if(p_mart){
+    place_pokemart(world[y][x]);
+  }
+  if (p_center){
+    place_center(world[y][x]);
+  }
+  
 
   if(y == 0){
     world[y][x]->map[y][n] = ter_boulder;
@@ -780,6 +810,7 @@ int main(int argc, char *argv[])
   //print starting world
   new_map(world, y, x);
   print_map(world[y][x]);
+  printf("(%d, %d)", x-199, y-199);
 
   int ty, tx;
   char input;
@@ -805,15 +836,21 @@ int main(int argc, char *argv[])
         break;
       case 'f':
         scanf("%d %d", &tx, &ty);
+        tx = tx+199;
+        ty = ty+199;
         break;
       default:
         valid =0;
-        printf("Invalid Command!\n");
+        print_map(world[y][x]);
+        printf("(%d, %d)", x-199, y-199);
+        printf(" Invalid Command! Enter New Command.");
         break;
     }
     if(check_bounds(ty, tx) == 0){
       valid =0;
-      printf("Out of Bounds!\n");
+      print_map(world[y][x]);
+      printf("(%d, %d)", x-199, y-199);
+      printf(" Out of Bounds! Enter New Command.");
     }
     else {
       y = ty;
@@ -825,6 +862,7 @@ int main(int argc, char *argv[])
         new_map(world, y, x);
       }
       print_map(world[y][x]);
+      printf("(%d, %d)", x-199, y-199);
     }
     else{
       //printf("Input invalid, please enter a new command.");
