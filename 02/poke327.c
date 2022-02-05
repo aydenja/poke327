@@ -625,7 +625,7 @@ void get_exits(map_t *world[WORLD_DIM][WORLD_DIM], int *n,
   int *s, int *e, int *w, int y, int x){
 
   //check north
-  if((y-1 > 0) && !(world[y-1][x] == NULL) ){
+  if((y-1 >= 0) && !(world[y-1][x] == NULL) ){
     *n = world[y-1][x]->s;
   }
   else{
@@ -649,7 +649,7 @@ void get_exits(map_t *world[WORLD_DIM][WORLD_DIM], int *n,
   }
 
   //check west
-  if((x-1 > 0) && !(world[y][x-1] == NULL) ){
+  if((x-1 >= 0) && !(world[y][x-1] == NULL) ){
     *w = world[y][x-1]->e;
   }
   else{
@@ -676,6 +676,19 @@ static int new_map(map_t *world[WORLD_DIM][WORLD_DIM],int y, int x)
   build_paths(world[y][x]);
   place_pokemart(world[y][x]);
   place_center(world[y][x]);
+
+  if(y == 0){
+    world[y][x]->map[y][n] = ter_boulder;
+  }
+  if(x == 0){
+    world[y][x]->map[w][x] = ter_boulder;
+  } 
+  if(x == WORLD_DIM-1){
+    world[y][x]->map[e][MAP_X-1] = ter_boulder;
+  }
+  if (y == WORLD_DIM-1){
+    world[y][x]->map[MAP_Y-1][s] = ter_boulder;
+  }
 
   return 0;
 }
@@ -724,6 +737,12 @@ static void print_map(map_t *m)
   }
 }
 
+int check_bounds(int y, int x){
+  if(y<0 || y>WORLD_DIM-1 || x<0 || x>WORLD_DIM-1){
+    return 0;
+  }
+  return 1;
+}
 
 
 int main(int argc, char *argv[])
@@ -758,14 +777,63 @@ int main(int argc, char *argv[])
   int x = WORLD_CEN;
   int y = WORLD_CEN;
 
-
+  //print starting world
   new_map(world, y, x);
   print_map(world[y][x]);
 
-  x++;
+  int ty, tx;
+  char input;
+  printf("\nEnter Command: ");
+  scanf(" %c", &input);
 
-  new_map(world, y, x);
-  print_map(world[y][x]);
+  while(!(input == 'q')){
+    int valid = 1;
+    ty = y;
+    tx = x;
+    switch(input){
+      case 'n':
+        ty--;
+        break;
+      case 's':
+        ty++;
+        break;
+      case 'e':
+        tx++;
+        break;
+      case 'w':
+        tx--;
+        break;
+      case 'f':
+        scanf("%d %d", &tx, &ty);
+        break;
+      default:
+        valid =0;
+        printf("Invalid Command!\n");
+        break;
+    }
+    if(check_bounds(ty, tx) == 0){
+      valid =0;
+      printf("Out of Bounds!\n");
+    }
+    else {
+      y = ty;
+      x = tx;
+    }
+
+    if(valid){
+      if(world[y][x] == NULL){
+        new_map(world, y, x);
+      }
+      print_map(world[y][x]);
+    }
+    else{
+      //printf("Input invalid, please enter a new command.");
+    }
+
+    printf("\nEnter Command: ");
+    scanf(" %c", &input);
+  }
+
 
   
   return 0;
