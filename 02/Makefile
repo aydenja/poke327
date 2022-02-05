@@ -13,7 +13,7 @@ LDFLAGS =
 BIN = poke327
 OBJS = poke327.o heap.o
 
-all: $(BIN)
+all: $(BIN) etags
 
 $(BIN): $(OBJS)
 	@$(ECHO) Linking $@
@@ -29,7 +29,7 @@ $(BIN): $(OBJS)
 	@$(ECHO) Compiling $<
 	@$(CXX) $(CXXFLAGS) -MMD -MF $*.d -c $<
 
-.PHONY: all clean clobber
+.PHONY: all clean clobber etags
 
 clean:
 	@$(ECHO) Removing all generated files
@@ -39,3 +39,6 @@ clobber: clean
 	@$(ECHO) Removing backup files
 	@$(RM) *~ \#* *pgm
 
+etags:
+	@$(ECHO) Updating TAGS
+	@etags *.[ch]

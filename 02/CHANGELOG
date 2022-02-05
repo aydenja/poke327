@@ -1,0 +1,5 @@
+1/29: Started assignment, implemented borders, random generation of tall grass regions as well as clearings, tall grass regions are smaller than clearings but take priority over placement
+1/30: Implemented the fill_path function and refactored code to fill_border and fill_grass in separate functions
+1/31: Implemented path generation
+2/1: Implemented optional terrain, trees, rocks. Implemented random placement of buildings along path.
+2/4: Using instructors solution as a base for assignment 1.02, refactored code to allow choice exit placement instead of random placement. Implemented the get exits function that will get exit values from neighbor maps, if neighbor maps don't exist exits get assigned a random value.

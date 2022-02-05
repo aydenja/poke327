@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <machine/endian.h>
+#include <endian.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <limits.h>
@@ -38,6 +38,8 @@ typedef uint8_t pair_t[num_dims];
 #define MIN_BOULDERS       10
 #define TREE_PROB          95
 #define BOULDER_PROB       95
+#define WORLD_DIM          399
+#define WORLD_CEN          199
 
 #define mappair(pair) (m->map[pair[dim_y]][pair[dim_x]])
 #define mapxy(x, y) (m->map[y][x])
@@ -619,17 +621,61 @@ static int place_trees(map_t *m)
   return 0;
 }
 
-static int new_map(map_t *m)
+void get_exits(map_t *world[WORLD_DIM][WORLD_DIM], int *n,
+  int *s, int *e, int *w, int y, int x){
+
+  //check north
+  if((y-1 > 0) && !(world[y-1][x] == NULL) ){
+    *n = world[y-1][x]->s;
+  }
+  else{
+    *n = 1 + rand() % (MAP_X - 2);
+  }
+
+  //check south
+  if((y+1 < WORLD_DIM) && !(world[y+1][x] == NULL) ){
+    *s = world[y+1][x]->n;
+  }
+  else{
+    *s = 1 + rand() % (MAP_X - 2);
+  }
+
+  //check east
+  if((x+1 < WORLD_DIM) && !(world[y][x+1] == NULL) ){
+    *e = world[y][x+1]->w;
+  }
+  else{
+    *e = 1 + rand() % (MAP_Y - 2);
+  }
+
+  //check west
+  if((x-1 > 0) && !(world[y][x-1] == NULL) ){
+    *w = world[y][x-1]->e;
+  }
+  else{
+    *w = 1 + rand() % (MAP_Y - 2);
+  }
+
+}
+
+static int new_map(map_t *world[WORLD_DIM][WORLD_DIM],int y, int x)
 {
-  smooth_height(m);
-  map_terrain(m,
-              1 + rand() % (MAP_X - 2), 1 + rand() % (MAP_X - 2),
-              1 + rand() % (MAP_Y - 2), 1 + rand() % (MAP_Y - 2));
-  place_boulders(m);
-  place_trees(m);
-  build_paths(m);
-  place_pokemart(m);
-  place_center(m);
+  
+  if(world[y][x] == NULL){
+    world[y][x] = malloc(sizeof (map_t));
+  }
+
+  int n, s, e, w;
+
+  get_exits(world, &n, &s, &e, &w, y, x);
+
+  smooth_height(world[y][x]);
+  map_terrain(world[y][x], n, s, e, w);
+  place_boulders(world[y][x]);
+  place_trees(world[y][x]);
+  build_paths(world[y][x]);
+  place_pokemart(world[y][x]);
+  place_center(world[y][x]);
 
   return 0;
 }
@@ -678,9 +724,24 @@ static void print_map(map_t *m)
   }
 }
 
+
+
 int main(int argc, char *argv[])
 {
-  map_t d;
+  //define world array
+  map_t *world[WORLD_DIM][WORLD_DIM];
+
+
+  //initialize to null
+  int i,j;
+  for (i=0;i<WORLD_DIM;i++){
+    for (j=0;j<WORLD_DIM;j++){
+      world[i][j] = NULL;
+    }
+  }
+
+
+  //seeding
   struct timeval tv;
   uint32_t seed;
 
@@ -691,11 +752,21 @@ int main(int argc, char *argv[])
     seed = (tv.tv_usec ^ (tv.tv_sec << 20)) & 0xffffffff;
   }
 
-  printf("Using seed: %u\n", seed);
+  printf("Using seedd: %u\n", seed);
   srand(seed);
 
-  new_map(&d);
-  print_map(&d);
+  int x = WORLD_CEN;
+  int y = WORLD_CEN;
+
+
+  new_map(world, y, x);
+  print_map(world[y][x]);
+
+  x++;
+
+  new_map(world, y, x);
+  print_map(world[y][x]);
+
   
   return 0;
 }
