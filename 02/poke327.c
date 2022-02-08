@@ -872,6 +872,13 @@ int main(int argc, char *argv[])
     scanf(" %c", &input);
   }
 
+  for (i=0;i<WORLD_DIM;i++){
+    for (j=0;j<WORLD_DIM;j++){
+      if(world[i][j]!=NULL){
+        free(world[i][j]);
+      }
+    }
+  }
 
   
   return 0;
