@@ -200,6 +200,46 @@ static void dijkstra_square(map_t *m, pair_t from, int (*f)(terrain_type_t))
       heap_decrease_key_no_replace(&h, path[p->pos[dim_y] + 1]
                                            [p->pos[dim_x]    ].hn);
     }
+    if ((path[p->pos[dim_y] + 1][p->pos[dim_x]+1  ].hn) &&
+        (path[p->pos[dim_y] + 1][p->pos[dim_x]+1  ].cost >
+         ((p->cost + f(mappair(p->pos))) ))) {
+      path[p->pos[dim_y] + 1][p->pos[dim_x] +1 ].cost =
+        ((p->cost + f(mappair(p->pos))) );
+      
+      //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] + 1, path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost );
+      heap_decrease_key_no_replace(&h, path[p->pos[dim_y] + 1]
+                                           [p->pos[dim_x] +1 ].hn);
+    }
+    if ((path[p->pos[dim_y] - 1][p->pos[dim_x]+1  ].hn) &&
+        (path[p->pos[dim_y] - 1][p->pos[dim_x]+1  ].cost >
+         ((p->cost + f(mappair(p->pos))) ))) {
+      path[p->pos[dim_y] - 1][p->pos[dim_x] +1 ].cost =
+        ((p->cost + f(mappair(p->pos))) );
+      
+      //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] + 1, path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost );
+      heap_decrease_key_no_replace(&h, path[p->pos[dim_y] - 1]
+                                           [p->pos[dim_x] +1 ].hn);
+    }
+    if ((path[p->pos[dim_y] + 1][p->pos[dim_x]-1  ].hn) &&
+        (path[p->pos[dim_y] + 1][p->pos[dim_x]-1  ].cost >
+         ((p->cost + f(mappair(p->pos))) ))) {
+      path[p->pos[dim_y] + 1][p->pos[dim_x] -1 ].cost =
+        ((p->cost + f(mappair(p->pos))) );
+      
+      //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] + 1, path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost );
+      heap_decrease_key_no_replace(&h, path[p->pos[dim_y] +1]
+                                           [p->pos[dim_x] -1 ].hn);
+    }
+    if ((path[p->pos[dim_y] - 1][p->pos[dim_x]-1  ].hn) &&
+        (path[p->pos[dim_y] - 1][p->pos[dim_x]-1  ].cost >
+         ((p->cost + f(mappair(p->pos))) ))) {
+      path[p->pos[dim_y] - 1][p->pos[dim_x] -1 ].cost =
+        ((p->cost + f(mappair(p->pos))) );
+      
+      //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] + 1, path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost );
+      heap_decrease_key_no_replace(&h, path[p->pos[dim_y] - 1]
+                                           [p->pos[dim_x] -1 ].hn);
+    }
     //printf("mid - Size: %d\n", h.size);
     //t = heap_peek_min(&h);
     //printf("new min is: %d\n", t->pos[dim_x]);
@@ -853,8 +893,16 @@ static int new_map(map_t *world[WORLD_DIM][WORLD_DIM],int y, int x)
   }
 
   //TODO place char on path
-  world[y][x]->pc[dim_x] = 40;
-  world[y][x]->pc[dim_y] = 10;
+
+  int i;
+  for(i=1; i<MAP_Y-1; i++){
+    if(world[y][x]->map[i][40] == ter_path){
+      world[y][x]->pc[dim_x] = 40;
+      world[y][x]->pc[dim_y] = i;
+      break;
+    }
+  }
+  
 
   dijkstra_square(world[y][x], world[y][x]->pc, get_hiker_cost);
 
