@@ -112,7 +112,20 @@ int get_hiker_cost(terrain_type_t t){
     case ter_forest:
       return 15;
     default:
-      return INT_MAX/3;
+      return INT_MAX/10;
+  }
+}
+
+int get_rival_cost(terrain_type_t t){
+  switch(t){
+    case ter_path:
+      return 10;
+    case ter_grass:
+      return 20;
+    case ter_clearing:
+      return 10;
+    default:
+      return INT_MAX/10;
   }
 }
 
@@ -135,7 +148,7 @@ static void dijkstra_square(map_t *m, pair_t from, int (*f)(terrain_type_t))
   
   for (y = 0; y < MAP_Y; y++) {
     for (x = 0; x < MAP_X; x++) {
-      path[y][x].cost = INT_MAX/3;
+      path[y][x].cost = INT_MAX/10;
     }
   }
 
@@ -247,7 +260,12 @@ static void dijkstra_square(map_t *m, pair_t from, int (*f)(terrain_type_t))
 
   for (y = 1; y < MAP_Y - 1; y++) {
     for (x = 1; x < MAP_X - 1; x++) {
-      printf("%02d ", path[y][x].cost%100);
+      if (path[y][x].cost == 214748364){
+        printf("   ");
+      }
+      else{
+        printf("%02d ", path[y][x].cost%100);
+      }
     }
     printf("\n");
   }
@@ -904,8 +922,6 @@ static int new_map(map_t *world[WORLD_DIM][WORLD_DIM],int y, int x)
   }
   
 
-  dijkstra_square(world[y][x], world[y][x]->pc, get_hiker_cost);
-
   if(y == 0){
     world[y][x]->map[y][n] = ter_boulder;
   }
@@ -926,6 +942,11 @@ static int new_map(map_t *world[WORLD_DIM][WORLD_DIM],int y, int x)
 
 static void print_map(map_t *m)
 {
+
+  printf("Hiker Map:\n");
+  dijkstra_square(m, m->pc, get_hiker_cost);
+  printf("Rival Map:\n");
+  dijkstra_square(m, m->pc, get_rival_cost);
   int x, y;
   int default_reached = 0;
   
