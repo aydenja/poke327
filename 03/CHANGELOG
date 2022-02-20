@@ -6,3 +6,6 @@
 2/5: Set up pointer array that represents the world. Initially, array is assigned to null. Implemented command system excluding fly.
 2/6: Implemented showing coordinates along with printing map. Implemented fly command as well as error handing on invalid/out of bounds commands. 
 2/7: Made exits on map edge unaccessible.
+2/10: Started implementation of Dijkstra's algorithm.
+2/11: continued implementing and debugging Dijkstra's algorithm.
+2/12: Finished Dijkstra's algorithm and implemented printing distance maps.
