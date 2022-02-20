@@ -165,7 +165,6 @@ static void dijkstra_square(map_t *m, pair_t from, int (*f)(terrain_type_t))
 
   //path_t *t = heap_peek_min(&h);
  // printf("new min is: %d\n", t->pos[dim_x]);
-  pair_t tmp;
 
   //printf("Start - Size: %d\n", h.size);
   //while heap is not empty remove smallest thing
@@ -175,103 +174,80 @@ static void dijkstra_square(map_t *m, pair_t from, int (*f)(terrain_type_t))
     //printf("test %d\n", (p->cost + get_hiker_cost(mappair(p->pos))));
     
     //all ifs that follow are calculating cost for each dir, only 4 need 4 more
-    tmp[dim_y] = p->pos[dim_y] - 1;
-    tmp[dim_x] = p->pos[dim_x];
     if ((path[p->pos[dim_y] - 1][p->pos[dim_x]    ].hn) &&
         (path[p->pos[dim_y] - 1][p->pos[dim_x]    ].cost >
-         ((p->cost + f(mappair(tmp))) ))) {
+         ((p->cost + f(mappair(p->pos))) ))) {
       path[p->pos[dim_y] - 1][p->pos[dim_x]    ].cost =
-        ((p->cost + f(mappair(tmp))) );
+        ((p->cost + f(mappair(p->pos))) );
       //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] - 1, path[p->pos[dim_y] - 1][p->pos[dim_x]    ].cost );
       heap_decrease_key_no_replace(&h, path[p->pos[dim_y] - 1]
                                            [p->pos[dim_x]    ].hn);
     }
-
-    tmp[dim_y] = p->pos[dim_y];
-    tmp[dim_x] = p->pos[dim_x]-1;
     if ((path[p->pos[dim_y]][p->pos[dim_x] -1  ].hn) &&
         (path[p->pos[dim_y]][p->pos[dim_x] -1 ].cost >
-         ((p->cost + f(mappair(tmp))) ))) {
+         ((p->cost + f(mappair(p->pos))) ))) {
       path[p->pos[dim_y]][p->pos[dim_x] -1 ].cost =
-        ((p->cost + f(mappair(tmp))) );
+        ((p->cost + f(mappair(p->pos))) );
       
       //printf("new cost for(%d, %d): %d\n",p->pos[dim_x]-1 ,p->pos[dim_y] , path[p->pos[dim_y]][p->pos[dim_x]  -1  ].cost );
       heap_decrease_key_no_replace(&h, path[p->pos[dim_y]]
                                            [p->pos[dim_x] -1 ].hn);
     }
-
-    tmp[dim_y] = p->pos[dim_y];
-    tmp[dim_x] = p->pos[dim_x]+1;
     if ((path[p->pos[dim_y]][p->pos[dim_x] +1  ].hn) &&
         (path[p->pos[dim_y]][p->pos[dim_x] +1 ].cost >
-         ((p->cost + f(mappair(tmp))) ))) {
+         ((p->cost + f(mappair(p->pos))) ))) {
       path[p->pos[dim_y]][p->pos[dim_x] +1 ].cost =
-        ((p->cost + f(mappair(tmp))) );
+        ((p->cost + f(mappair(p->pos))) );
       
       //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] +1 ,p->pos[dim_y], path[p->pos[dim_y] ][p->pos[dim_x] +1   ].cost );
       heap_decrease_key_no_replace(&h, path[p->pos[dim_y]]
                                            [p->pos[dim_x] +1 ].hn);
     }
-
-    tmp[dim_y] = p->pos[dim_y] + 1;
-    tmp[dim_x] = p->pos[dim_x];
     if ((path[p->pos[dim_y] + 1][p->pos[dim_x]    ].hn) &&
         (path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost >
-         ((p->cost + f(mappair(tmp))) ))) {
+         ((p->cost + f(mappair(p->pos))) ))) {
       path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost =
-        ((p->cost + f(mappair(tmp))) );
+        ((p->cost + f(mappair(p->pos))) );
       
       //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] + 1, path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost );
       heap_decrease_key_no_replace(&h, path[p->pos[dim_y] + 1]
                                            [p->pos[dim_x]    ].hn);
     }
-
-    tmp[dim_y] = p->pos[dim_y] + 1;
-    tmp[dim_x] = p->pos[dim_x] +1;
     if ((path[p->pos[dim_y] + 1][p->pos[dim_x]+1  ].hn) &&
         (path[p->pos[dim_y] + 1][p->pos[dim_x]+1  ].cost >
-         ((p->cost + f(mappair(tmp))) ))) {
+         ((p->cost + f(mappair(p->pos))) ))) {
       path[p->pos[dim_y] + 1][p->pos[dim_x] +1 ].cost =
-        ((p->cost + f(mappair(tmp))) );
+        ((p->cost + f(mappair(p->pos))) );
       
       //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] + 1, path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost );
       heap_decrease_key_no_replace(&h, path[p->pos[dim_y] + 1]
                                            [p->pos[dim_x] +1 ].hn);
     }
-
-    tmp[dim_y] = p->pos[dim_y] - 1;
-    tmp[dim_x] = p->pos[dim_x]+1;
     if ((path[p->pos[dim_y] - 1][p->pos[dim_x]+1  ].hn) &&
         (path[p->pos[dim_y] - 1][p->pos[dim_x]+1  ].cost >
-         ((p->cost + f(mappair(tmp))) ))) {
+         ((p->cost + f(mappair(p->pos))) ))) {
       path[p->pos[dim_y] - 1][p->pos[dim_x] +1 ].cost =
-        ((p->cost + f(mappair(tmp))) );
+        ((p->cost + f(mappair(p->pos))) );
       
       //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] + 1, path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost );
       heap_decrease_key_no_replace(&h, path[p->pos[dim_y] - 1]
                                            [p->pos[dim_x] +1 ].hn);
     }
-
-    tmp[dim_y] = p->pos[dim_y] + 1;
-    tmp[dim_x] = p->pos[dim_x] -1;
     if ((path[p->pos[dim_y] + 1][p->pos[dim_x]-1  ].hn) &&
         (path[p->pos[dim_y] + 1][p->pos[dim_x]-1  ].cost >
-         ((p->cost + f(mappair(tmp))) ))) {
+         ((p->cost + f(mappair(p->pos))) ))) {
       path[p->pos[dim_y] + 1][p->pos[dim_x] -1 ].cost =
-        ((p->cost + f(mappair(tmp))) );
+        ((p->cost + f(mappair(p->pos))) );
       
       //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] + 1, path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost );
       heap_decrease_key_no_replace(&h, path[p->pos[dim_y] +1]
                                            [p->pos[dim_x] -1 ].hn);
     }
-
-    tmp[dim_y] = p->pos[dim_y] - 1;
-    tmp[dim_x] = p->pos[dim_x]-1;
     if ((path[p->pos[dim_y] - 1][p->pos[dim_x]-1  ].hn) &&
         (path[p->pos[dim_y] - 1][p->pos[dim_x]-1  ].cost >
-         ((p->cost + f(mappair(tmp))) ))) {
+         ((p->cost + f(mappair(p->pos))) ))) {
       path[p->pos[dim_y] - 1][p->pos[dim_x] -1 ].cost =
-        ((p->cost + f(mappair(tmp))) );
+        ((p->cost + f(mappair(p->pos))) );
       
       //printf("new cost for(%d, %d): %d\n",p->pos[dim_x] ,p->pos[dim_y] + 1, path[p->pos[dim_y] + 1][p->pos[dim_x]    ].cost );
       heap_decrease_key_no_replace(&h, path[p->pos[dim_y] - 1]
@@ -281,9 +257,8 @@ static void dijkstra_square(map_t *m, pair_t from, int (*f)(terrain_type_t))
     //t = heap_peek_min(&h);
     //printf("new min is: %d\n", t->pos[dim_x]);
   }
-  printf("\n");
+
   for (y = 1; y < MAP_Y - 1; y++) {
-    printf("   ");
     for (x = 1; x < MAP_X - 1; x++) {
       if (path[y][x].cost == 214748364){
         printf("   ");
@@ -294,7 +269,6 @@ static void dijkstra_square(map_t *m, pair_t from, int (*f)(terrain_type_t))
     }
     printf("\n");
   }
-  printf("\n");
 
   heap_delete(&h);
   return;
@@ -1056,7 +1030,7 @@ int main(int argc, char *argv[])
     seed = (tv.tv_usec ^ (tv.tv_sec << 20)) & 0xffffffff;
   }
   //TO REMOVE!!
-  //seed = 2144914724;
+  seed = 2144914724;
 
 
   printf("Using seedd: %u\n", seed);

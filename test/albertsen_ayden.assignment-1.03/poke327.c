@@ -1056,7 +1056,7 @@ int main(int argc, char *argv[])
     seed = (tv.tv_usec ^ (tv.tv_sec << 20)) & 0xffffffff;
   }
   //TO REMOVE!!
-  //seed = 2144914724;
+  seed = 2144914724;
 
 
   printf("Using seedd: %u\n", seed);
