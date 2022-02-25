@@ -42,7 +42,7 @@ typedef struct heap 13,153
   void (*datum_delete)datum_delete17,269
 } heap_t;18,301
 
-poke327.c,3012
+poke327.c,3364
 #define malloc(14,226
 typedef enum dim 22,372
   dim_x,23,391
@@ -85,73 +85,85 @@ typedef enum __attribute__ ((__packed__)) character_type 56,1094
   char_empty,65,1271
   num_character_types66,1285
 } character_type_t;67,1307
-typedef struct pc 69,1328
-  pair_t pos;70,1348
-} pc_t;71,1362
-typedef struct map 73,1371
-  terrain_type_t map[map74,1392
-  uint8_t height[height75,1428
-  int8_t n,76,1460
-  int8_t n, s,76,1460
-  int8_t n, s, e,76,1460
-  int8_t n, s, e, w;76,1460
-} map_t;77,1481
-typedef struct path 79,1491
-  heap_node_t *hn;hn80,1513
-  uint8_t pos[pos81,1532
-  uint8_t from[from82,1550
-  int32_t cost;83,1569
-  int32_t time;84,1585
-  character_type_t ct;85,1601
-} path_t;86,1624
-typedef struct queue_node 88,1635
-  int x,89,1663
-  int x, y;89,1663
-  struct queue_node *next;next90,1675
-} queue_node_t;91,1702
-typedef struct world 93,1719
-  map_t *world[world94,1742
-  pair_t cur_idx;95,1782
-  map_t *cur_map;cur_map96,1800
-  int hiker_dist[hiker_dist99,1925
-  int rival_dist[rival_dist100,1957
-  pc_t pc;101,1989
-  character_type_t chars[chars102,2000
-} world_t;103,2040
-world_t world;107,2207
-static int32_t move_cost[move_cost109,2223
-static int32_t path_cmp(116,2584
-static int32_t edge_penalty(120,2707
-static void dijkstra_path(125,2833
-static int build_paths(223,6619
-static int gaussian[gaussian314,8291
-static int smooth_height(322,8454
-static void find_building_location(479,12489
-static int place_pokemart(510,13976
-static int place_center(524,14268
-static int map_terrain(537,14565
-static int place_boulders(717,18928
-static int place_trees(733,19252
-static int new_map(752,19726
-static void print_map(816,21626
-void init_world(892,23301
-void delete_world(905,23521
-#define ter_cost(919,23751
-static int32_t hiker_cmp(921,23805
-static int32_t rival_cmp(928,24104
-void pathfind(935,24403
-void init_pc(1155,34485
-void print_hiker_dist(1169,34729
-void print_rival_dist(1185,35013
-int is_empty(1201,35327
-void get_hiker_pos(1208,35428
-void get_next_pos(1235,35860
-void place_char 1271,36511
-void spawn_trainers(1293,37117
-static int32_t char_cmp(1310,37362
-int main(1314,37487
+typedef enum __attribute__ ((__packed__)) direction_type 69,1328
+  north,70,1387
+  east,71,1396
+  south,72,1404
+  west73,1413
+} direction_type_t;74,1420
+typedef struct pc 76,1441
+  pair_t pos;77,1461
+} pc_t;78,1475
+typedef struct map 80,1484
+  terrain_type_t map[map81,1505
+  uint8_t height[height82,1541
+  int8_t n,83,1573
+  int8_t n, s,83,1573
+  int8_t n, s, e,83,1573
+  int8_t n, s, e, w;83,1573
+} map_t;84,1594
+typedef struct path 86,1604
+  heap_node_t *hn;hn87,1626
+  uint8_t pos[pos88,1645
+  uint8_t from[from89,1663
+  int32_t cost;90,1682
+  int32_t time;91,1698
+  character_type_t ct;92,1714
+  direction_type_t dir;93,1737
+} path_t;94,1761
+typedef struct queue_node 96,1772
+  int x,97,1800
+  int x, y;97,1800
+  struct queue_node *next;next98,1812
+} queue_node_t;99,1839
+typedef struct world 101,1856
+  map_t *world[world102,1879
+  pair_t cur_idx;103,1919
+  map_t *cur_map;cur_map104,1937
+  int hiker_dist[hiker_dist107,2062
+  int rival_dist[rival_dist108,2094
+  pc_t pc;109,2126
+  character_type_t chars[chars110,2137
+} world_t;111,2177
+world_t world;115,2344
+static int32_t move_cost[move_cost117,2360
+static int32_t path_cmp(129,3081
+static int32_t edge_penalty(133,3204
+static void dijkstra_path(138,3330
+static int build_paths(236,7116
+static int gaussian[gaussian327,8788
+static int smooth_height(335,8951
+static void find_building_location(492,12986
+static int place_pokemart(523,14473
+static int place_center(537,14765
+static int map_terrain(550,15062
+static int place_boulders(730,19425
+static int place_trees(746,19749
+static int new_map(765,20223
+static void print_map(829,22123
+void init_world(905,23798
+void delete_world(918,24018
+#define ter_cost(932,24248
+static int32_t hiker_cmp(934,24302
+static int32_t rival_cmp(941,24601
+void pathfind(948,24900
+void init_pc(1168,34982
+void print_hiker_dist(1182,35226
+void print_rival_dist(1198,35510
+int is_empty(1214,35824
+int valid_rival 1221,35925
+void get_hiker_pos(1228,36082
+void get_rival_pos(1255,36514
+void get_pacer_pos(1282,36946
+void get_wanderer_pos 1331,37976
+void get_random_pos 1396,39346
+void get_next_pos(1461,40471
+void place_char 1497,41209
+void spawn_trainers(1522,41881
+static int32_t char_cmp(1539,42126
+int main(1549,42327
 
-ref.c,2888
+ref.c,3085
 #define malloc(13,206
 typedef enum dim 21,352
   dim_x,22,371
@@ -194,64 +206,71 @@ typedef enum __attribute__ ((__packed__)) character_type 55,1074
   char_empty,64,1251
   num_character_types65,1265
 } character_type_t;66,1287
-typedef struct pc 68,1308
-  pair_t pos;69,1328
-} pc_t;70,1342
-typedef struct map 72,1351
-  terrain_type_t map[map73,1372
-  uint8_t height[height74,1408
-  int8_t n,75,1440
-  int8_t n, s,75,1440
-  int8_t n, s, e,75,1440
-  int8_t n, s, e, w;75,1440
-} map_t;76,1461
-typedef struct path 78,1471
-  heap_node_t *hn;hn79,1493
-  uint8_t pos[pos80,1512
-  uint8_t from[from81,1530
-  int32_t cost;82,1549
-  int32_t time;83,1565
-  character_type_t ct;84,1581
-} path_t;85,1604
-typedef struct queue_node 87,1615
-  int x,88,1643
-  int x, y;88,1643
-  struct queue_node *next;next89,1655
-} queue_node_t;90,1682
-typedef struct world 92,1699
-  map_t *world[world93,1722
-  pair_t cur_idx;94,1762
-  map_t *cur_map;cur_map95,1780
-  int hiker_dist[hiker_dist98,1905
-  int rival_dist[rival_dist99,1937
-  pc_t pc;100,1969
-  character_type_t chars[chars101,1980
-} world_t;102,2020
-world_t world;106,2187
-static int32_t move_cost[move_cost108,2203
-static int32_t path_cmp(115,2564
-static int32_t edge_penalty(119,2687
-static void dijkstra_path(124,2813
-static int build_paths(222,6599
-static int gaussian[gaussian313,8271
-static int smooth_height(321,8434
-static void find_building_location(478,12469
-static int place_pokemart(509,13956
-static int place_center(523,14248
-static int map_terrain(536,14545
-static int place_boulders(716,18908
-static int place_trees(732,19232
-static int new_map(751,19706
-static void print_map(815,21606
-void init_world(891,23281
-void delete_world(904,23501
-#define ter_cost(918,23731
-static int32_t hiker_cmp(920,23785
-static int32_t rival_cmp(927,24084
-void pathfind(934,24383
-void init_pc(1154,34465
-void print_hiker_dist(1168,34709
-void print_rival_dist(1184,34993
-void place_char 1200,35307
-void spawn_trainers(1221,35796
-int main(1238,36041
+typedef enum __attribute__ ((__packed__)) direction_type 68,1308
+  north,69,1367
+  east,70,1376
+  south,71,1384
+  west72,1393
+} direction_type_t;73,1400
+typedef struct pc 75,1421
+  pair_t pos;76,1441
+} pc_t;77,1455
+typedef struct map 79,1464
+  terrain_type_t map[map80,1485
+  uint8_t height[height81,1521
+  int8_t n,82,1553
+  int8_t n, s,82,1553
+  int8_t n, s, e,82,1553
+  int8_t n, s, e, w;82,1553
+} map_t;83,1574
+typedef struct path 85,1584
+  heap_node_t *hn;hn86,1606
+  uint8_t pos[pos87,1625
+  uint8_t from[from88,1643
+  int32_t cost;89,1662
+  int32_t time;90,1678
+  character_type_t ct;91,1694
+  direction_type_t dir;92,1717
+} path_t;93,1741
+typedef struct queue_node 95,1752
+  int x,96,1780
+  int x, y;96,1780
+  struct queue_node *next;next97,1792
+} queue_node_t;98,1819
+typedef struct world 100,1836
+  map_t *world[world101,1859
+  pair_t cur_idx;102,1899
+  map_t *cur_map;cur_map103,1917
+  int hiker_dist[hiker_dist106,2042
+  int rival_dist[rival_dist107,2074
+  pc_t pc;108,2106
+  character_type_t chars[chars109,2117
+} world_t;110,2157
+world_t world;114,2324
+static int32_t move_cost[move_cost116,2340
+static int32_t path_cmp(128,3061
+static int32_t edge_penalty(132,3184
+static void dijkstra_path(137,3310
+static int build_paths(235,7096
+static int gaussian[gaussian326,8768
+static int smooth_height(334,8931
+static void find_building_location(491,12966
+static int place_pokemart(522,14453
+static int place_center(536,14745
+static int map_terrain(549,15042
+static int place_boulders(729,19405
+static int place_trees(745,19729
+static int new_map(764,20203
+static void print_map(828,22103
+void init_world(904,23778
+void delete_world(917,23998
+#define ter_cost(931,24228
+static int32_t hiker_cmp(933,24282
+static int32_t rival_cmp(940,24581
+void pathfind(947,24880
+void init_pc(1167,34962
+void print_hiker_dist(1181,35206
+void print_rival_dist(1197,35490
+void place_char 1213,35804
+void spawn_trainers(1234,36293
+int main(1251,36538

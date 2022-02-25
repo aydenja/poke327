@@ -66,6 +66,13 @@ typedef enum __attribute__ ((__packed__)) character_type {
   num_character_types
 } character_type_t;
 
+typedef enum __attribute__ ((__packed__)) direction_type {
+  north,
+  east,
+  south,
+  west
+} direction_type_t;
+
 typedef struct pc {
   pair_t pos;
 } pc_t;
@@ -83,6 +90,7 @@ typedef struct path {
   int32_t cost;
   int32_t time;
   character_type_t ct;
+  direction_type_t dir;
 } path_t;
 
 typedef struct queue_node {
@@ -109,6 +117,11 @@ world_t world;
 static int32_t move_cost[num_character_types][num_terrain_types] = {
   { INT_MAX, INT_MAX, 10, 10,      10,      20, 10, INT_MAX, INT_MAX },
   { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 15, 10, 15,      15      },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
   { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
   { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
 };
@@ -1205,6 +1218,13 @@ int is_empty(int x, int y){
   return 0;
 }
 
+int valid_rival (int x, int y){
+  if(world.rival_dist[y][x] == INT_MAX || world.rival_dist[y][x] < 0){
+    return 0;
+  }
+  return world.rival_dist[y][x];
+}
+
 void get_hiker_pos(int *x, int *y){
   int cx = *x;
   int cy = *y;
@@ -1232,6 +1252,212 @@ void get_hiker_pos(int *x, int *y){
   *x = nx;
 }
 
+void get_rival_pos(int *x, int *y){
+  int cx = *x;
+  int cy = *y;
+  int nx = *x;
+  int ny = *y;
+  int i,j;
+  
+  int min = 99999999;
+
+  for(i=cy-1; i<cy+2; i++){
+    for(j=cx-1; j<cx+2; j++){
+      if(cy == i && cx == j){
+
+      }
+      else if (world.rival_dist[i][j]<min && 
+        world.chars[i][j] == char_empty){
+        min = world.rival_dist[i][j];
+        ny = i;
+        nx = j;
+      }
+    }
+  }
+
+  *y = ny;
+  *x = nx;
+}
+
+void get_pacer_pos(path_t *p, int *x, int *y){
+  direction_type_t dir = p->dir;
+  int cx = *x;
+  int cy = *y;
+  int nx = *x;
+  int ny = *y;
+  switch(dir){
+    case north:
+      if(valid_rival(cx, cy-1) && world.cur_map->map[cy][cx] == world.cur_map->map[cy-1][cx]){
+        nx = cx;
+        ny = cy-1;
+      }
+      else{
+        p->dir = south;
+      }
+      break;
+    case south:
+      if(valid_rival(cx, cy+1) && world.cur_map->map[cy][cx] == world.cur_map->map[cy+1][cx]){
+        nx = cx;
+        ny = cy+1;
+      }
+      else{
+        p->dir = north;
+      }
+      break;
+    case east:
+      if(valid_rival(cx+1, cy) && world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx+1]) {
+        nx = cx+1;
+        ny = cy;
+      }
+      else{
+        p->dir = west;
+      }
+      break;
+    case west:
+      if(valid_rival(cx-1, cy) && world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx-1]){
+        nx = cx-1;
+        ny = cy;
+      }
+      else{
+        p->dir = east;
+      }
+      break;
+  }
+
+  *y = ny;
+  *x = nx;
+}
+
+void get_wanderer_pos (path_t *p, int *x, int *y){
+  direction_type_t dir = p->dir;
+  int cx = *x;
+  int cy = *y;
+  int nx = *x;
+  int ny = *y;
+  switch(dir){
+    case north:
+      if(valid_rival(cx, cy-1) && world.cur_map->map[cy][cx] == world.cur_map->map[cy-1][cx]){
+        nx = cx;
+        ny = cy-1;
+      }
+      else{
+        int nd;
+        do {
+          nd = rand() % 4;
+        } while (nd == north);
+        p->dir = nd;
+      }
+      break;
+    case south:
+      if(valid_rival(cx, cy+1) && world.cur_map->map[cy][cx] == world.cur_map->map[cy+1][cx]){
+        nx = cx;
+        ny = cy+1;
+      }
+      else{
+        int nd;
+        do {
+          nd = rand() % 4;
+        } while (nd == south);
+        p->dir = nd;
+      }
+      break;
+    case east:
+      if(valid_rival(cx+1, cy) && world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx+1]) {
+        nx = cx+1;
+        ny = cy;
+      }
+      else{
+        int nd;
+        do {
+          nd = rand() % 4;
+        } while (nd == east);
+        p->dir = nd;
+      }
+      break;
+    case west:
+      if(valid_rival(cx-1, cy) && world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx-1]){
+        nx = cx-1;
+        ny = cy;
+      }
+      else{
+        int nd;
+        do {
+          nd = rand() % 4;
+        } while (nd == west);
+        p->dir = nd;
+      }
+      break;
+  }
+
+  *y = ny;
+  *x = nx;
+}
+
+void get_random_pos (path_t *p, int *x, int *y) {
+  direction_type_t dir = p->dir;
+  int cx = *x;
+  int cy = *y;
+  int nx = *x;
+  int ny = *y;
+  switch(dir){
+    case north:
+      if(valid_rival(cx, cy-1) ){
+        nx = cx;
+        ny = cy-1;
+      }
+      else{
+        int nd;
+        do {
+          nd = rand() % 4;
+        } while (nd == north);
+        p->dir = nd;
+      }
+      break;
+    case south:
+      if(valid_rival(cx, cy+1) ){
+        nx = cx;
+        ny = cy+1;
+      }
+      else{
+        int nd;
+        do {
+          nd = rand() % 4;
+        } while (nd == south);
+        p->dir = nd;
+      }
+      break;
+    case east:
+      if(valid_rival(cx+1, cy) ) {
+        nx = cx+1;
+        ny = cy;
+      }
+      else{
+        int nd;
+        do {
+          nd = rand() % 4;
+        } while (nd == east);
+        p->dir = nd;
+      }
+      break;
+    case west:
+      if(valid_rival(cx-1, cy) ){
+        nx = cx-1;
+        ny = cy;
+      }
+      else{
+        int nd;
+        do {
+          nd = rand() % 4;
+        } while (nd == west);
+        p->dir = nd;
+      }
+      break;
+  }
+
+  *y = ny;
+  *x = nx;
+}
+
 void get_next_pos(path_t *p){
   
   character_type_t c = p->ct;
@@ -1243,22 +1469,22 @@ void get_next_pos(path_t *p){
       get_hiker_pos(&x, &y);
       break;
     case char_rival:
-      //TODO
+      get_rival_pos(&x, &y);
       break;
     case char_pacer:
-      //TODO
+      get_pacer_pos(p, &x, &y);
       break;
     case char_wanderer:
-      //TODO
+      get_wanderer_pos(p, &x, &y);
       break;
     case char_stationary:
-      //TODO
+      //dont move
       break;
     case char_random:
-      //TODO
+      get_random_pos(p, &x, &y);
       break;
     default:
-      //TODO
+      //dont move
       break;
   }
 
@@ -1275,17 +1501,20 @@ void place_char (character_type_t c){
     do {
       x = rand() % (MAP_X - 2) + 1;
       y = rand() % (MAP_Y - 2) + 1;
-    } while (world.hiker_dist[y][x] == INT_MAX && world.chars[y][x] != char_empty);
+    } while (world.hiker_dist[y][x] == INT_MAX || world.chars[y][x] != char_empty);
     //printf("placed at %d, %d", x, y);
     world.chars[y][x] = c;
   }
   else {
+    int vr =0;
     do {
       x = rand() % (MAP_X - 2) + 1;
       y = rand() % (MAP_Y - 2) + 1;
-    } while (world.rival_dist[y][x] == INT_MAX && 
-      world.chars[y][x] != char_empty && world.cur_map->map[y][x] != ter_path);
-    //printf("placed at %d, %d", x, y);
+      vr = valid_rival(x, y);
+      //printf("vr returned%d", vr);
+    } while ((vr == 0) || 
+      ((world.chars[y][x] != char_empty) || (world.cur_map->map[y][x] == ter_path)));
+    //printf("placed at %d, %d\n", x, y);
     world.chars[y][x] = c;
   }
 }
@@ -1296,7 +1525,7 @@ void spawn_trainers(int num){
     num--;
   }
   if(num>0){
-    place_char(char_hiker);
+    place_char(char_rival);
     num--;
   }
 
@@ -1308,7 +1537,13 @@ void spawn_trainers(int num){
 }
 
 static int32_t char_cmp(const void *key, const void *with) {
-  return (((path_t *) key)->time - ((path_t *) with)->time);
+  path_t * k = ((path_t *) key);
+  path_t * w = ((path_t *) with);
+
+  int costk = k->time;
+  int costw = w->time;
+
+  return costk-costw;
 }
 
 int main(int argc, char *argv[])
@@ -1351,13 +1586,14 @@ int main(int argc, char *argv[])
   int i, j;
   for(i=0; i<MAP_Y; i++){
     for(j=0; j<MAP_X; j++){
-      if(world.chars[i][j] != char_empty && world.chars[i][j] != char_pc){
+      if(world.chars[i][j] != char_empty){
         path[i][j].pos[dim_y] = i;
         path[i][j].pos[dim_x] = j;
         path[i][j].ct = world.chars[i][j];
         path[i][j].time = 0;
         get_next_pos(&path[i][j]);
         path[i][j].cost = 0;
+        path[i][j].dir = rand() % 4;
         path[i][j].hn = heap_insert(&h, &path[i][j]);
       }
     }
@@ -1382,7 +1618,7 @@ int main(int argc, char *argv[])
 
     get_next_pos(p);
     p->time = p->time + 1000;
-    p->cost = world.rival_dist[p->from[dim_y]][p->from[dim_x]];
+    p->cost = move_cost[p->ct][world.cur_map->map[cy][cx]];
 
     path_t *z = p;
     //printf("next min should be %d with cost%d \n", z->ct, z->time);

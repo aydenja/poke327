@@ -65,6 +65,13 @@ typedef enum __attribute__ ((__packed__)) character_type {
   num_character_types
 } character_type_t;
 
+typedef enum __attribute__ ((__packed__)) direction_type {
+  north,
+  east,
+  south,
+  west
+} direction_type_t;
+
 typedef struct pc {
   pair_t pos;
 } pc_t;
@@ -82,6 +89,7 @@ typedef struct path {
   int32_t cost;
   int32_t time;
   character_type_t ct;
+  direction_type_t dir;
 } path_t;
 
 typedef struct queue_node {
@@ -108,6 +116,11 @@ world_t world;
 static int32_t move_cost[num_character_types][num_terrain_types] = {
   { INT_MAX, INT_MAX, 10, 10,      10,      20, 10, INT_MAX, INT_MAX },
   { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 15, 10, 15,      15      },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
+  { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
   { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
   { INT_MAX, INT_MAX, 10, INT_MAX, INT_MAX, 20, 10, INT_MAX, INT_MAX },
 };
