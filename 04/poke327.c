@@ -1287,7 +1287,9 @@ void get_pacer_pos(path_t *p, int *x, int *y){
   int ny = *y;
   switch(dir){
     case north:
-      if(valid_rival(cx, cy-1) && world.cur_map->map[cy][cx] == world.cur_map->map[cy-1][cx]){
+      if(valid_rival(cx, cy-1) && 
+        world.cur_map->map[cy][cx] == world.cur_map->map[cy-1][cx]
+        && is_empty(cx, cy-1)){
         nx = cx;
         ny = cy-1;
       }
@@ -1296,7 +1298,9 @@ void get_pacer_pos(path_t *p, int *x, int *y){
       }
       break;
     case south:
-      if(valid_rival(cx, cy+1) && world.cur_map->map[cy][cx] == world.cur_map->map[cy+1][cx]){
+      if(valid_rival(cx, cy+1) && 
+        world.cur_map->map[cy][cx] == world.cur_map->map[cy+1][cx]
+        && is_empty(cx, cy+1)){
         nx = cx;
         ny = cy+1;
       }
@@ -1305,7 +1309,9 @@ void get_pacer_pos(path_t *p, int *x, int *y){
       }
       break;
     case east:
-      if(valid_rival(cx+1, cy) && world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx+1]) {
+      if(valid_rival(cx+1, cy) && 
+        world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx+1]
+        && is_empty(cx+1, cy)) {
         nx = cx+1;
         ny = cy;
       }
@@ -1314,7 +1320,9 @@ void get_pacer_pos(path_t *p, int *x, int *y){
       }
       break;
     case west:
-      if(valid_rival(cx-1, cy) && world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx-1]){
+      if(valid_rival(cx-1, cy) && 
+        world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx-1]
+        && is_empty(cx-1, cy)){
         nx = cx-1;
         ny = cy;
       }
@@ -1336,7 +1344,9 @@ void get_wanderer_pos (path_t *p, int *x, int *y){
   int ny = *y;
   switch(dir){
     case north:
-      if(valid_rival(cx, cy-1) && world.cur_map->map[cy][cx] == world.cur_map->map[cy-1][cx]){
+      if(valid_rival(cx, cy-1) && 
+        world.cur_map->map[cy][cx] == world.cur_map->map[cy-1][cx]
+        && is_empty(cx, cy-1)){
         nx = cx;
         ny = cy-1;
       }
@@ -1349,7 +1359,9 @@ void get_wanderer_pos (path_t *p, int *x, int *y){
       }
       break;
     case south:
-      if(valid_rival(cx, cy+1) && world.cur_map->map[cy][cx] == world.cur_map->map[cy+1][cx]){
+      if(valid_rival(cx, cy+1) && 
+        world.cur_map->map[cy][cx] == world.cur_map->map[cy+1][cx]
+        && is_empty(cx, cy+1)){
         nx = cx;
         ny = cy+1;
       }
@@ -1362,7 +1374,9 @@ void get_wanderer_pos (path_t *p, int *x, int *y){
       }
       break;
     case east:
-      if(valid_rival(cx+1, cy) && world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx+1]) {
+      if(valid_rival(cx+1, cy) && 
+        world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx+1]
+        && is_empty(cx+1, cy)) {
         nx = cx+1;
         ny = cy;
       }
@@ -1375,7 +1389,9 @@ void get_wanderer_pos (path_t *p, int *x, int *y){
       }
       break;
     case west:
-      if(valid_rival(cx-1, cy) && world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx-1]){
+      if(valid_rival(cx-1, cy) && 
+        world.cur_map->map[cy][cx] == world.cur_map->map[cy][cx-1]
+        && is_empty(cx-1, cy)){
         nx = cx-1;
         ny = cy;
       }
@@ -1401,7 +1417,7 @@ void get_random_pos (path_t *p, int *x, int *y) {
   int ny = *y;
   switch(dir){
     case north:
-      if(valid_rival(cx, cy-1) ){
+      if(valid_rival(cx, cy-1) &&  is_empty(cx, cy-1)){
         nx = cx;
         ny = cy-1;
       }
@@ -1414,7 +1430,7 @@ void get_random_pos (path_t *p, int *x, int *y) {
       }
       break;
     case south:
-      if(valid_rival(cx, cy+1) ){
+      if(valid_rival(cx, cy+1) &&  is_empty(cx, cy+1)){
         nx = cx;
         ny = cy+1;
       }
@@ -1427,7 +1443,7 @@ void get_random_pos (path_t *p, int *x, int *y) {
       }
       break;
     case east:
-      if(valid_rival(cx+1, cy) ) {
+      if(valid_rival(cx+1, cy) &&  is_empty(cx+1, cy)) {
         nx = cx+1;
         ny = cy;
       }
@@ -1440,7 +1456,7 @@ void get_random_pos (path_t *p, int *x, int *y) {
       }
       break;
     case west:
-      if(valid_rival(cx-1, cy) ){
+      if(valid_rival(cx-1, cy) &&  is_empty(cx-1, cy)){
         nx = cx-1;
         ny = cy;
       }
@@ -1617,15 +1633,15 @@ int main(int argc, char *argv[])
     }
 
     get_next_pos(p);
-    p->time = p->time + 1000;
-    p->cost = move_cost[p->ct][world.cur_map->map[cy][cx]];
+    p->time = p->time + move_cost[p->ct][world.cur_map->map[cy][cx]];
+    //p->cost = move_cost[p->ct][world.cur_map->map[cy][cx]];
 
     path_t *z = p;
     //printf("next min should be %d with cost%d \n", z->ct, z->time);
     p = heap_remove_min(&h);
     heap_insert(&h, z);
 
-    usleep(250000);
+    usleep(25000);
     //print_hiker_dist();
     print_map();
 
