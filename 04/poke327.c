@@ -1507,7 +1507,7 @@ void get_next_pos(path_t *p){
   p->from[dim_x] = x;
   p->from[dim_y] = y;
 
-  printf("%d type next pos is(%d, %d) curr(%d, %d)\n",p->ct, p->from[dim_x], p->from[dim_y], p->pos[dim_x], p->pos[dim_y]);
+  //printf("%d type next pos is(%d, %d) curr(%d, %d)\n",p->ct, p->from[dim_x], p->from[dim_y], p->pos[dim_x], p->pos[dim_y]);
 }
 
 void place_char (character_type_t c){
@@ -1619,7 +1619,7 @@ int main(int argc, char *argv[])
 
   p = heap_remove_min(&h);
   while ((p)) {
-    printf("removed 1 thing of type %d, cost:%d \n", p->ct, p->time);
+    //printf("removed 1 thing of type %d, cost:%d \n", p->ct, p->time);
     int nx = p->from[dim_x];
     int ny = p->from[dim_y];
     int cx = p->pos[dim_x];
