@@ -1546,10 +1546,18 @@ static void print_map()
   for (y = 0; y < MAP_Y; y++) {
     for (x = 0; x < MAP_X; x++) {
       if (world.cur_map->cmap[y][x]) {
-        mvaddch(y+1,x,world.cur_map->cmap[y][x]->symbol);
         if(world.cur_map->cmap[y][x]->symbol == '@'){
+          attron(COLOR_PAIR(5));
           mvprintw(0, 50, "pc at %d,%d", world.cur_map->cmap[y][x]->pos[dim_y],world.cur_map->cmap[y][x]->pos[dim_x]);
+          mvaddch(y+1,x,world.cur_map->cmap[y][x]->symbol);
+          attroff(COLOR_PAIR(5));
         }
+        else {
+          attron(COLOR_PAIR(6));
+          mvaddch(y+1,x,world.cur_map->cmap[y][x]->symbol);
+          attroff(COLOR_PAIR(6));
+        }
+        
       } else {
         switch (world.cur_map->map[y][x]) {
         case ter_boulder:
@@ -1558,10 +1566,14 @@ static void print_map()
           break;
         case ter_tree:
         case ter_forest:
+          attron(COLOR_PAIR(4));
           mvaddch(y+1,x,'^');
+          attroff(COLOR_PAIR(4));
           break;
         case ter_path:
+          attron(COLOR_PAIR(3));
           mvaddch(y+1,x,'#');
+          attroff(COLOR_PAIR(3));
           break;
         case ter_mart:
           mvaddch(y+1,x,'M');
@@ -1570,10 +1582,14 @@ static void print_map()
           mvaddch(y+1,x,'C');
           break;
         case ter_grass:
+          attron(COLOR_PAIR(2));
           mvaddch(y+1,x,':');
+          attroff(COLOR_PAIR(2));
           break;
         case ter_clearing:
+          attron(COLOR_PAIR(1));
           mvaddch(y+1,x,'.');
+          attroff(COLOR_PAIR(1));
           break;
         default:
           default_reached = 1;
@@ -1713,7 +1729,7 @@ void game_loop()
   pair_t d;
   print_map();
   int quit_game = 0;
-
+  //int count_test =0;
 
   while (!quit_game) {
     c = heap_remove_min(&world.cur_map->turn);
@@ -1721,6 +1737,8 @@ void game_loop()
       int valid =0;
       while(!valid){
         print_map();
+        //mvprintw(22, 50, "count is at %d", count_test);
+        //count_test =0;
         int input;
         input = getch();
         pair_t dir;
@@ -1875,6 +1893,7 @@ void game_loop()
       
       
     } else {
+      //count_test++;
       move_func[c->npc->mtype](c, d);
       world.cur_map->cmap[c->pos[dim_y]][c->pos[dim_x]] = NULL;
       world.cur_map->cmap[d[dim_y]][d[dim_x]] = c;
@@ -2017,6 +2036,15 @@ int main(int argc, char *argv[])
   noecho(); //does not echo char into terminal
   curs_set(0); // visibility of 0
   keypad(stdscr, TRUE);
+  start_color();
+  init_color(8, 255, 140, 26);
+  init_color(9,  220,220,220);
+  init_pair(1, COLOR_GREEN, COLOR_BLACK);
+  init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(3, 8, COLOR_BLACK);
+  init_pair(4, 9, COLOR_BLACK);
+  init_pair(5, COLOR_CYAN, COLOR_BLACK);
+  init_pair(6, COLOR_RED, COLOR_BLACK);
   world.pc.pc = NULL;
 
   init_world();
