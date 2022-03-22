@@ -1576,10 +1576,14 @@ static void print_map()
           attroff(COLOR_PAIR(3));
           break;
         case ter_mart:
+          attron(COLOR_PAIR(7));
           mvaddch(y+1,x,'M');
+          attroff(COLOR_PAIR(7));
           break;
         case ter_center:
+          attron(COLOR_PAIR(7));
           mvaddch(y+1,x,'C');
+          attroff(COLOR_PAIR(7));
           break;
         case ter_grass:
           attron(COLOR_PAIR(2));
@@ -1758,7 +1762,7 @@ void game_loop()
             world.cur_map->cmap[d[dim_y]][d[dim_x]] = c;
             c->pos[dim_y] = d[dim_y];
             c->pos[dim_x] = d[dim_x];
-            if(d[dim_y]!=0 && d[dim_x]!=0){
+            if(d[dim_y]!=0 && d[dim_x]!=0 && move_cost[char_other][world.cur_map->map[d[dim_y]][d[dim_x]]]!= INT_MAX){
               pathfind(world.cur_map);
             }
             valid =1;
@@ -1771,7 +1775,7 @@ void game_loop()
             world.cur_map->cmap[d[dim_y]][d[dim_x]] = c;
             c->pos[dim_y] = d[dim_y];
             c->pos[dim_x] = d[dim_x];
-            if(d[dim_y]!=0){
+            if(d[dim_y]!=0 && move_cost[char_other][world.cur_map->map[d[dim_y]][d[dim_x]]]!= INT_MAX){
               pathfind(world.cur_map);
             }
             valid =1;
@@ -1785,7 +1789,7 @@ void game_loop()
             world.cur_map->cmap[d[dim_y]][d[dim_x]] = c;
             c->pos[dim_y] = d[dim_y];
             c->pos[dim_x] = d[dim_x];
-            if(d[dim_y]!=0 && d[dim_x]!=MAP_X-1){
+            if(d[dim_y]!=0 && d[dim_x]!=MAP_X-1 && move_cost[char_other][world.cur_map->map[d[dim_y]][d[dim_x]]]!= INT_MAX){
               pathfind(world.cur_map);
             }
             valid =1;
@@ -1798,7 +1802,7 @@ void game_loop()
             world.cur_map->cmap[d[dim_y]][d[dim_x]] = c;
             c->pos[dim_y] = d[dim_y];
             c->pos[dim_x] = d[dim_x];
-            if(d[dim_y]!=0 && d[dim_x]!=MAP_X-1){
+            if(d[dim_y]!=0 && d[dim_x]!=MAP_X-1 && move_cost[char_other][world.cur_map->map[d[dim_y]][d[dim_x]]]!= INT_MAX){
               pathfind(world.cur_map);
             }
             valid =1;
@@ -1812,7 +1816,7 @@ void game_loop()
             world.cur_map->cmap[d[dim_y]][d[dim_x]] = c;
             c->pos[dim_y] = d[dim_y];
             c->pos[dim_x] = d[dim_x];
-            if(d[dim_y]!=MAP_Y-1 && d[dim_x]!=MAP_X-1){
+            if(d[dim_y]!=MAP_Y-1 && d[dim_x]!=MAP_X-1 && move_cost[char_other][world.cur_map->map[d[dim_y]][d[dim_x]]]!= INT_MAX){
               pathfind(world.cur_map);
             }
             valid =1;
@@ -1825,7 +1829,7 @@ void game_loop()
             world.cur_map->cmap[d[dim_y]][d[dim_x]] = c;
             c->pos[dim_y] = d[dim_y];
             c->pos[dim_x] = d[dim_x];
-            if(c->pos[dim_y] != MAP_Y-1){
+            if(c->pos[dim_y] != MAP_Y-1 && move_cost[char_other][world.cur_map->map[d[dim_y]][d[dim_x]]]!= INT_MAX){
               pathfind(world.cur_map);
             }
             valid =1;
@@ -1839,7 +1843,7 @@ void game_loop()
             world.cur_map->cmap[d[dim_y]][d[dim_x]] = c;
             c->pos[dim_y] = d[dim_y];
             c->pos[dim_x] = d[dim_x];
-            if(d[dim_y]!=MAP_Y-1 && d[dim_x]!=0){
+            if(d[dim_y]!=MAP_Y-1 && d[dim_x]!=0 && move_cost[char_other][world.cur_map->map[d[dim_y]][d[dim_x]]]!= INT_MAX){
               pathfind(world.cur_map);
             }
             valid =1;
@@ -1852,7 +1856,7 @@ void game_loop()
             world.cur_map->cmap[d[dim_y]][d[dim_x]] = c;
             c->pos[dim_y] = d[dim_y];
             c->pos[dim_x] = d[dim_x];
-            if(d[dim_x]!=0){
+            if(d[dim_x]!=0 && move_cost[char_other][world.cur_map->map[d[dim_y]][d[dim_x]]]!= INT_MAX){
               pathfind(world.cur_map);
             }
             valid =1;
@@ -2045,6 +2049,7 @@ int main(int argc, char *argv[])
   init_pair(4, 9, COLOR_BLACK);
   init_pair(5, COLOR_CYAN, COLOR_BLACK);
   init_pair(6, COLOR_RED, COLOR_BLACK);
+  init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
   world.pc.pc = NULL;
 
   init_world();

@@ -15,3 +15,5 @@
 2/27: Touching up algorithms for movement and updating move time in the priority queue.
 3/16: Got the features of assignment 04 implemented using the curses library.
 3/17: added pc movement and battle screens
+3/18: added trainer menu, walking to different maps, building menu
+3/21: added colors, final touches
