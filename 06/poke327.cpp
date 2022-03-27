@@ -5,15 +5,17 @@
 #include "heap.h"
 #include "pokemon.h"
 #include "moves.h"
+#include "pokemon_moves.h"
+#include "type_names.h"
 
 
-void parse_pokemon(pokemon p [1092], std::ifstream  &i){
+void parse_pokemon(pokemon *p [1092], std::ifstream  &i){
     std::string first;
     std::getline(i, first);
     
     int j;
     for (j=0; j<1092; j++){
-        
+        p[j] = new pokemon();
         std::string id;
         std::getline(i, id, ',');
 
@@ -38,21 +40,23 @@ void parse_pokemon(pokemon p [1092], std::ifstream  &i){
         std::string isd;
         std::getline(i, isd);
 
-        p[j].set_values(stoi(id), name, stoi(sid), stoi(h), stoi(w), stoi(be), stoi(o), stoi(isd));
+        p[j]->set_values(stoi(id), name, stoi(sid), stoi(h), stoi(w), stoi(be), stoi(o), stoi(isd));
     }
 
 }
 
 
-void parse_moves(moves p [844], std::ifstream  &i){
+void parse_moves(moves *p [844], std::ifstream  &i){
     std::string first;
     std::getline(i, first);
     
     int j;
     for (j=0; j<844; j++){
+        p[j] = new moves();
+        
         std::string id;
         //std::cout << i.peek() << " " << j << std::endl;
-        if(i.peek() == 44){
+        if(i.peek() == ','){
             i.get();
             id = "-1";
         }
@@ -187,10 +191,118 @@ void parse_moves(moves p [844], std::ifstream  &i){
             std::getline(i, super_contest_effect_id);
         }
 
-        p[j].set_values(stoi(id), identifier, stoi(gen_id), stoi(type_id), stoi(power), stoi(pp), stoi(accuracy), stoi(priority), stoi(target_id), stoi(damage_class_id), stoi(effect_id), stoi(effect_chance), stoi(contest_type_id), stoi(contest_effect_id), stoi(super_contest_effect_id));
+        p[j]->set_values(stoi(id), identifier, stoi(gen_id), stoi(type_id), stoi(power), stoi(pp), stoi(accuracy), stoi(priority), stoi(target_id), stoi(damage_class_id), stoi(effect_id), stoi(effect_chance), stoi(contest_type_id), stoi(contest_effect_id), stoi(super_contest_effect_id));
         //p[0].set_values(1, "test", 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
     }
 
+}
+
+void parse_pokemon_moves(pokemon_moves *p [528238], std::ifstream  &i){
+    std::string first;
+    std::getline(i, first);
+    
+    int j;
+    for (j=0; j<528238; j++){
+        p[j] = new pokemon_moves();
+        std::string id;
+        if(i.peek() == ','){
+            i.get();
+            id = "-1";
+        }
+        else {
+            std::getline(i, id, ',');
+        }
+
+        std::string version_group_id;
+        if(i.peek() == ','){
+            i.get();
+            version_group_id = "-1";
+        }
+        else {
+            std::getline(i, version_group_id, ',');
+        }
+
+        //std::cout << version_group_id << std::endl;
+
+        std::string move_id;
+        if(i.peek() == ','){
+            i.get();
+            move_id = "-1";
+        }
+        else {
+            std::getline(i, move_id, ',');
+        }
+
+        std::string pokemon_move_method_id;
+        if(i.peek() == ','){
+            i.get();
+            pokemon_move_method_id = "-1";
+        }
+        else {
+            std::getline(i, pokemon_move_method_id, ',');
+        }
+
+        std::string level;
+        if(i.peek() == ','){
+            i.get();
+            level = "-1";
+        }
+        else {
+            std::getline(i, level, ',');
+        }
+
+        std::string order;
+        if(i.peek() == '\n'){
+            i.get();
+            order = "-1";
+        }
+        else {
+            std::getline(i, order);
+        }
+        
+        //std::cout << j << id << version_group_id<<  move_id<<  pokemon_move_method_id << level  << order  <<  std::endl;
+        p[j]->set_values(stoi(id), stoi(version_group_id), stoi(move_id), stoi(pokemon_move_method_id), stoi(level), stoi(order));
+        
+    }
+
+}
+
+void parse_type_names(type_names *p [40], std::ifstream  &i){
+    
+    std::string first;
+    std::getline(i, first);
+    
+    int j;
+    while (j<40)
+    {
+        int len = i.tellg();
+        std::string line;
+        std::string tmp;
+        //getline(i, line);
+        std::getline(i, tmp, ',');
+        std::getline(i, tmp, ',');
+
+        if(stoi(tmp) == 1 || stoi(tmp) == 9 ){
+            p[j] = new type_names();
+            i.seekg(len ,std::ios_base::beg);
+            std::string id;
+            std::getline(i, id, ',');
+
+            std::string lid;
+            std::getline(i, lid, ',');
+
+            std::string name;
+            std::getline(i, name);
+
+            p[j]->set_values(stoi(id), stoi(lid), name);
+            j++;
+        }
+        else{
+             std::getline(i, tmp);
+        }
+
+    }
+    
 }
 
 int main(int argc, char const *argv[])
@@ -216,14 +328,16 @@ int main(int argc, char const *argv[])
         }
     }
 
-    pokemon poke [1092];
-    moves move [844];
+    pokemon *poke [1092];
+    moves *move [844];
+    pokemon_moves *p_moves[528238];
+    type_names *t_names[40];
 
     if (fname == "pokemon"){
         parse_pokemon(poke, i);
         int j; 
         for(j=0; j<1092; j++){
-            poke[j].print();
+            poke[j]->print();
         }
     }
 
@@ -231,7 +345,23 @@ int main(int argc, char const *argv[])
         parse_moves(move, i);
         int j; 
         for(j=0; j<844; j++){
-            move[j].print();
+            move[j]->print();
+        }
+    }
+
+    if (fname == "pokemon_moves"){
+        parse_pokemon_moves(p_moves, i);
+        int j; 
+        for(j=0; j<528238; j++){
+            p_moves[j]->print();
+        }
+    }
+
+    if (fname == "type_names"){
+        parse_type_names(t_names, i);
+        int j; 
+        for(j=0; j<40; j++){
+            t_names[j]->print();
         }
     }
     return 0;
