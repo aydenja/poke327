@@ -7,6 +7,8 @@
 #include "moves.h"
 #include "pokemon_moves.h"
 #include "type_names.h"
+#include "pokemon_species.h"
+#include "experience.h"
 
 
 void parse_pokemon(pokemon *p [1092], std::ifstream  &i){
@@ -305,6 +307,82 @@ void parse_type_names(type_names *p [40], std::ifstream  &i){
     
 }
 
+std::string getNext(std::ifstream  &i){
+    std::string id;
+    if(i.peek() == ','){
+        i.get();
+        id = "-1";
+    }
+    else {
+        std::getline(i, id, ',');
+    }
+    return id;
+}
+
+void parse_pokemon_species(pokemon_species *p [898], std::ifstream  &i){
+    
+    std::string first;
+    std::getline(i, first);
+
+    int j;
+    for (j=0; j<898; j++){
+        
+        p[j] = new pokemon_species();
+        std::string id = getNext(i);
+        std::string identifier = getNext(i);
+        std::string generation_id = getNext(i);
+        std::string evolves_from_species_id = getNext(i);
+        std::string evolution_chain_id = getNext(i);
+        std::string color_id = getNext(i);
+        std::string shape_id = getNext(i);
+        std::string habitat_id = getNext(i);
+        std::string gender_rate = getNext(i);
+        std::string capture_rate = getNext(i);
+        std::string base_happiness = getNext(i);
+        std::string is_baby = getNext(i);
+        std::string hatch_counter = getNext(i);
+        std::string has_gender_differences = getNext(i);
+        std::string growth_rate_id = getNext(i);
+        std::string forms_switchable = getNext(i);
+        std::string is_legendary = getNext(i);
+        std::string is_mythical = getNext(i);
+        std::string order = getNext(i);
+        std::string conquest_order;
+        if(i.peek() == '\n'){
+            i.get();
+            conquest_order = "-1";
+        }
+        else {
+            std::getline(i, conquest_order);
+        }
+
+        p[j]->set_values(stoi(id), identifier, stoi(generation_id), stoi(evolves_from_species_id), stoi(evolution_chain_id), stoi(color_id), stoi(shape_id), stoi(habitat_id), stoi(gender_rate), stoi(capture_rate), stoi(base_happiness), stoi(is_baby), stoi(hatch_counter), stoi(has_gender_differences), stoi(growth_rate_id), stoi(forms_switchable), stoi(is_legendary), stoi(is_mythical), stoi(order), stoi(conquest_order));
+    }
+
+}
+
+void parse_experience(experience *p [600], std::ifstream  &i){
+    
+    std::string first;
+    std::getline(i, first);
+    
+    int j;
+    for (j=0; j<600; j++){
+        p[j] = new experience();
+        std::string growth_rate_id;
+        std::getline(i, growth_rate_id, ',');
+
+        std::string level;
+        std::getline(i, level, ',');
+
+        std::string experience;
+        std::getline(i, experience);
+
+        p[j]->set_values(stoi(growth_rate_id), stoi(level), stoi(experience));
+    }
+    
+}
+
 int main(int argc, char const *argv[])
 {
     std::string fname;
@@ -325,6 +403,9 @@ int main(int argc, char const *argv[])
         if(i.fail()){
             i.open(try3);
             //std::cout << i.fail() << std::endl;
+            if(i.fail()){
+                std::cout << "Could not find file" << std::endl;
+            }
         }
     }
 
@@ -332,6 +413,9 @@ int main(int argc, char const *argv[])
     moves *move [844];
     pokemon_moves *p_moves[528238];
     type_names *t_names[40];
+    pokemon_species *p_species[898];
+    experience *ex[600];
+    
 
     if (fname == "pokemon"){
         parse_pokemon(poke, i);
@@ -364,5 +448,23 @@ int main(int argc, char const *argv[])
             t_names[j]->print();
         }
     }
+
+    if (fname == "pokemon_species"){
+        parse_pokemon_species(p_species, i);
+        int j; 
+        for(j=0; j<898; j++){
+            p_species[j]->print();
+        }
+    }
+
+    if (fname == "experience"){
+        parse_experience(ex, i);
+        int j; 
+        for(j=0; j<600; j++){
+            ex[j]->print();
+        }
+    }
+
+
     return 0;
 }

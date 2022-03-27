@@ -58,24 +58,66 @@ pokemon_species::~pokemon_species(){
 
 void pokemon_species::print(){
     //std::cout << "ID: " << type_id << " | ";
-    std::cout << "id: " <<id << " | ";
-    std::cout << "identifier: " <<identifier << " | ";
-    std::cout << "generation_id: " <<generation_id << " | ";
-    std::cout << "evolves_from_species_id: " <<evolves_from_species_id << " | ";
-    std::cout << "evolution_chain_id: " <<evolution_chain_id << " | ";
-    std::cout << "color_id: " <<color_id << " | ";
-    std::cout << "shape_id: " <<shape_id << " | ";
-    std::cout << "habitat_id: " <<habitat_id << " | ";
-    std::cout << "gender_rate: " <<gender_rate << " | ";
-    std::cout << "capture_rate: " <<capture_rate << " | ";
-    std::cout << "base_happiness: " <<base_happiness << " | ";
-    std::cout << "is_baby: " <<is_baby << " | ";
-    std::cout << "hatch_counter: " <<hatch_counter << " | ";
-    std::cout << "has_gender_differences: " <<has_gender_differences << " | ";
-    std::cout << "growth_rate_id: " <<growth_rate_id << " | ";
-    std::cout << "forms_switchable: " <<forms_switchable << " | ";
-    std::cout << "is_legendary: " <<is_legendary << " | ";
-    std::cout << "is_mythical: " <<is_mythical << " | ";
-    std::cout << "order: " <<order << " | ";
-    std::cout << "conquest_order: " <<conquest_order << std::endl;
+   if(id != -1){
+        std::cout << "id: " <<id << " | ";
+    }
+   if(identifier != "-1"){
+        std::cout << "identifier: " <<identifier << " | ";
+    }
+   if(generation_id != -1){
+        std::cout << "generation_id: " <<generation_id << " | ";
+    }
+   if(evolves_from_species_id != -1){
+        std::cout << "evolves_from_species_id: " <<evolves_from_species_id << " | ";
+    }
+   if(evolution_chain_id != -1){
+        std::cout << "evolution_chain_id: " <<evolution_chain_id << " | ";
+    }
+   if(color_id != -1){
+        std::cout << "color_id: " <<color_id << " | ";
+    }
+   if(shape_id != -1){
+        std::cout << "shape_id: " <<shape_id << " | ";
+    }
+   if(habitat_id != -1){
+        std::cout << "habitat_id: " <<habitat_id << " | ";
+    }
+   if(gender_rate != -1){
+        std::cout << "gender_rate: " <<gender_rate << " | ";
+    }
+   if(capture_rate != -1){
+        std::cout << "capture_rate: " <<capture_rate << " | ";
+    }
+   if(base_happiness != -1){
+        std::cout << "base_happiness: " <<base_happiness << " | ";
+    }
+   if(is_baby != -1){
+        std::cout << "is_baby: " <<is_baby << " | ";
+    }
+   if(hatch_counter != -1){
+        std::cout << "hatch_counter: " <<hatch_counter << " | ";
+    }
+   if(has_gender_differences != -1){
+        std::cout << "has_gender_differences: " <<has_gender_differences << " | ";
+    }
+   if(growth_rate_id != -1){
+        std::cout << "growth_rate_id: " <<growth_rate_id << " | ";
+    }
+   if(forms_switchable != -1){
+        std::cout << "forms_switchable: " <<forms_switchable << " | ";
+    }
+   if(is_legendary != -1){
+        std::cout << "is_legendary: " <<is_legendary << " | ";
+    }
+   if(is_mythical != -1){
+        std::cout << "is_mythical: " <<is_mythical << " | ";
+    }
+   if(order != -1){
+        std::cout << "order: " <<order << " | ";
+    }
+   if(conquest_order != -1){
+        std::cout << "conquest_order: " <<conquest_order;
+   }
+
+    std::cout << std::endl;
 }
