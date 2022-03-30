@@ -5,9 +5,8 @@
 # include <assert.h>
 
 # include "heap.h"
-#include "character_t.h"
 
-//typedef struct character character_t;
+typedef struct character character_t;
 
 #define malloc(size) ({          \
   void *_tmp;                    \
@@ -71,16 +70,16 @@ typedef struct map {
   int8_t n, s, e, w;
 } map_t;
 
-// typedef struct npc npc_t;
-// typedef struct pc pc_t;
-// /* Here instead of character.h to abvoid including character.h */
-// typedef struct character {
-//   npc_t *npc;
-//   pc_t *pc;
-//   pair_t pos;
-//   char symbol;
-//   int next_turn;
-// } character_t;
+typedef struct npc npc_t;
+typedef struct pc pc_t;
+/* Here instead of character.h to abvoid including character.h */
+typedef struct character {
+  npc_t *npc;
+  pc_t *pc;
+  pair_t pos;
+  char symbol;
+  int next_turn;
+} character_t;
 
 typedef struct world {
   map_t *world[WORLD_SIZE][WORLD_SIZE];

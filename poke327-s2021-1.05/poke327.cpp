@@ -13,6 +13,7 @@
 #include "poke327.h"
 #include "character.h"
 #include "io.h"
+#include "character_t.h"
 
 typedef struct queue_node {
   int x, y;

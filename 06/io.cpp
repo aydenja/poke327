@@ -7,7 +7,6 @@
 #include "io.h"
 #include "character.h"
 #include "poke327.h"
-#include "character_t.h"
 
 typedef struct io_message {
   /* Will print " --more-- " at end of line when another message follows. *
