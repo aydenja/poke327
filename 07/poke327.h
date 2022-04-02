@@ -3,6 +3,7 @@
 
 # include <stdlib.h>
 # include <assert.h>
+#include <string>
 
 # include "heap.h"
 # include "character.h"
@@ -94,16 +95,18 @@ class Map {
 
 class Pokemon_t {
   public:
+    int index;
     int id;
-    std::String identifier;
+    int species_id;
+    char identifier[30];
     int level;
-    int IV;
-    int move_id1;
-    int move_id2;
-
+    int num_moves;
+    int move_index_1;
+    int move_index_2;
 
     Pokemon_t();
     virtual ~Pokemon_t();
+    void set_moves();
 };
 
 /* Here instead of character.h to abvoid including character.h */

@@ -7,6 +7,7 @@
 #include "io.h"
 #include "character.h"
 #include "poke327.h"
+#include "db_parse.h"
 
 typedef struct io_message {
   /* Will print " --more-- " at end of line when another message follows. *
@@ -362,10 +363,25 @@ void io_pokemon_center()
 }
 
 void io_p_encounter(){
-  int r = rand() % 10;
+ int r = rand() % 10;
 
   clear();
+  Pokemon_t np;
   mvprintw(0,0, "test poke %d", r);
+  mvprintw(1,0, "index: %d", np.index);
+  mvprintw(2,0, "id: %d", np.id);
+  mvprintw(3,0, "sid: %d", np.species_id);
+  mvprintw(4,0, "name: %s", np.identifier);
+  mvprintw(5,0, "level: %d", np.level);
+  mvprintw(6,0, "num moves: %d", np.num_moves);
+
+
+  if(np.num_moves >= 1){
+    mvprintw(7,0, "move 1: %s", moves[np.move_index_1].identifier);
+  }
+  if(np.num_moves == 2){
+    mvprintw(8,0, "move 2: %s",  moves[np.move_index_2].identifier);
+  }
   refresh();
   getch();
 }

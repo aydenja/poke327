@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <ncurses.h>
+#include <vector>
 
 #include "heap.h"
 #include "poke327.h"
@@ -45,22 +46,67 @@ int getDistance(){
 int getLevel(){
   int lvl =1;
   int d = getDistance();
+  if(d==0){
+    return 1;
+  }
   if(d<=200){
     lvl = rand() % ((d/2) + 1 - 1) + 1;
   }
   else {
-    lvl = rand() % (100 + 1 - ((d-200)/2)) + ((d-200)/2)
+    lvl = rand() % (100 + 1 - ((d-200)/2)) + ((d-200)/2);
   }
+  return lvl;
+}
+
+void Pokemon_t::set_moves(){
+  std::vector<int> found;
+  int i;
+  for(i = 0; i < 528238; i++){
+    if(pokemon_moves[i].version_group_id == 19){
+      if(pokemon_moves[i].pokemon_id == id){
+        if(pokemon_moves[i].pokemon_move_method_id == 1){
+          found.push_back(i);
+        }
+      }
+    }
+  }
+
+  if(found.size() == 0){
+    move_index_1 = -1;
+    move_index_2 = -1;
+    num_moves =0;
+  }
+  else if(found.size() == 1){
+    move_index_1 = pokemon_moves[found[0]].move_id;
+    move_index_2 = -1;
+    num_moves =1;
+  }
+  else{
+    int m1 = rand() % found.size();
+    move_index_1 = pokemon_moves[found[m1]].move_id;
+
+    found.erase (found.begin()+m1);
+
+    int m2 = rand() % found.size();
+    move_index_2 = pokemon_moves[found[m2]].move_id;
+    num_moves =2;
+  }
+
+
 }
 
 
 Pokemon_t::Pokemon_t(){
   index = (rand() % 1093) + 1;
-  id = pokemon[index].id
+  id = pokemon[index].id;
   species_id = pokemon[index].species_id;
   level = getLevel();
+  strcpy(identifier, pokemon[index].identifier);
+  set_moves();
 
 }
+
+Pokemon_t::~Pokemon_t(){};
 
 static int32_t path_cmp(const void *key, const void *with) {
   return ((path_t *) key)->cost - ((path_t *) with)->cost;
@@ -1224,6 +1270,7 @@ int main(int argc, char *argv[])
   } while (c != 'q');
 
   */
+
 
   game_loop();
   
