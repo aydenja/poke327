@@ -62,8 +62,8 @@ void Pokemon_t::set_moves(){
   std::vector<int> found;
   int i;
   for(i = 0; i < 528238; i++){
-    if(pokemon_moves[i].version_group_id == 19){
-      if(pokemon_moves[i].pokemon_id == id){
+    if(pokemon_moves[i].version_group_id == 16 || pokemon_moves[i].version_group_id == 20){ //assignment spec says 19 but a lot of pokemon end up with no moves..
+      if(pokemon_moves[i].pokemon_id == species_id){
         if(pokemon_moves[i].pokemon_move_method_id == 1){
           found.push_back(i);
         }
