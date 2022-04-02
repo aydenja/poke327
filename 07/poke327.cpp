@@ -95,6 +95,95 @@ void Pokemon_t::set_moves(){
 
 }
 
+void Pokemon_t::set_base(){
+  int i;
+  for (i = 1; i <= 6552; i++){
+    if(p_stats[i].pokemon_id == id){
+      if(p_stats[i].stat_id == 1){
+        base_hp = p_stats[i].base_stat;
+      }
+      if(p_stats[i].stat_id == 2){
+        base_a = p_stats[i].base_stat;
+      }
+      if(p_stats[i].stat_id == 3){
+        base_d = p_stats[i].base_stat;
+      }
+      if(p_stats[i].stat_id == 4){
+        base_sa = p_stats[i].base_stat;
+      }
+      if(p_stats[i].stat_id == 5){
+        base_sd = p_stats[i].base_stat;
+      }
+      if(p_stats[i].stat_id == 6){
+        base_s = p_stats[i].base_stat;
+      }
+    }
+  }
+}
+
+void Pokemon_t::set_gender(){
+  int r = rand() %2;
+  if(r == 0){
+    gender = 'F';
+  }
+  else {
+    gender = 'M';
+  }
+}
+
+void Pokemon_t::set_type(){
+  if(rand() % 8192 == 0){
+    strcpy(type, "Shiny");
+  }
+  else{
+    strcpy(type, "Normal");
+  }
+}
+
+int Pokemon_t::get_hp(){
+  int top = ((base_hp + iv_hp)*2)*level;
+  int frac = (top/100) + level + 10;
+  return frac;
+}
+
+
+int Pokemon_t::get_stat(int stat_id){
+  int base;
+  int iv;
+
+  switch (stat_id)
+  {
+  case 2:
+    base = base_a;
+    iv = iv_a;
+    break;
+  case 3:
+    base = base_d;
+    iv = iv_d;
+    break;
+  case 4:
+    base = base_sa;
+    iv = iv_sa;
+    break;
+  case 5:
+    base = base_sd;
+    iv = iv_sd;
+    break;
+  case 6:
+    base = base_s;
+    iv = iv_s;
+    break;    
+  default:
+    base = base_a;
+    iv = iv_a;
+    break;
+  }
+
+  int top = ((base + iv)*2)*level;
+  int frac = (top/100) +5;
+  return frac;
+
+}
 
 Pokemon_t::Pokemon_t(){
   index = (rand() % 1093) + 1;
@@ -103,6 +192,18 @@ Pokemon_t::Pokemon_t(){
   level = getLevel();
   strcpy(identifier, pokemon[index].identifier);
   set_moves();
+  set_base();
+  set_gender();
+  set_type();
+
+  iv_hp = rand() % 16;
+  iv_a = rand() % 16;
+  iv_d = rand() % 16;
+  iv_s = rand() % 16;
+  iv_sa = rand() % 16;
+  iv_sd = rand() % 16;
+
+
 
 }
 

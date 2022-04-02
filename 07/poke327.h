@@ -104,9 +104,31 @@ class Pokemon_t {
     int move_index_1;
     int move_index_2;
 
+    int iv_hp;
+    int iv_a;
+    int iv_d;
+    int iv_s;
+    int iv_sa;
+    int iv_sd;
+
+    int base_hp;
+    int base_a;
+    int base_d;
+    int base_s;
+    int base_sa;
+    int base_sd;
+
+    char gender;
+    char type[30];
+
     Pokemon_t();
     virtual ~Pokemon_t();
     void set_moves();
+    void set_base();
+    void set_gender();
+    void set_type();
+    int get_hp();
+    int get_stat(int stat_id);
 };
 
 /* Here instead of character.h to abvoid including character.h */

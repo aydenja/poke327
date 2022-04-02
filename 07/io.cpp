@@ -363,27 +363,31 @@ void io_pokemon_center()
 }
 
 void io_p_encounter(){
- int r = rand() % 10;
+  int r = rand() % 10;
+  if(r == 2){
 
-  clear();
-  Pokemon_t np;
-  mvprintw(0,0, "test poke %d", r);
-  mvprintw(1,0, "index: %d", np.index);
-  mvprintw(2,0, "id: %d", np.id);
-  mvprintw(3,0, "sid: %d", np.species_id);
-  mvprintw(4,0, "name: %s", np.identifier);
-  mvprintw(5,0, "level: %d", np.level);
-  mvprintw(6,0, "num moves: %d", np.num_moves);
+    clear();
+    //you can then store the new pokemon wherever
+    Pokemon_t np;
+    mvprintw(0,0, "You caught a wild %s!", np.identifier);
+    mvprintw(2,0, "Level: %d", np.level);
+    mvprintw(3,0, "Stats->  HP:%d | ATK:%d | DEF:%d | SPD:%d | SA:%d | SD:%d", np.get_hp(), np.get_stat(2),  np.get_stat(3), np.get_stat(6),  np.get_stat(4),  np.get_stat(5));
+    mvprintw(4,0, "INFO->  Species: %s | Gender: %c | Type: %s", species[np.species_id].identifier, np.gender, np.type);
+
+    mvprintw(6,0, "Number of moves: %d", np.num_moves);
 
 
-  if(np.num_moves >= 1){
-    mvprintw(7,0, "move 1: %s", moves[np.move_index_1].identifier);
+    if(np.num_moves >= 1){
+      mvprintw(7,0, "Move #1: %s", moves[np.move_index_1].identifier);
+    }
+    if(np.num_moves == 2){
+      mvprintw(8,0, "Move #2: %s",  moves[np.move_index_2].identifier);
+    }
+
+    mvprintw(10,0, "Press any key to exit.");
+    refresh();
+    getch();
   }
-  if(np.num_moves == 2){
-    mvprintw(8,0, "move 2: %s",  moves[np.move_index_2].identifier);
-  }
-  refresh();
-  getch();
 }
 
 void io_battle(Character *aggressor, Character *defender)
