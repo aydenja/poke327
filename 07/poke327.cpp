@@ -49,6 +49,9 @@ int getLevel(){
   if(d==0){
     return 1;
   }
+  if(((d/2) + 1 - 1) == 0){
+    return 1;
+  }
   if(d<=200){
     lvl = rand() % ((d/2) + 1 - 1) + 1;
   }
