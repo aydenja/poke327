@@ -364,7 +364,7 @@ void io_pokemon_center()
 
 void io_p_encounter(){
   int r = rand() % 10;
-  if(r == 2){
+  if(r == 0){
 
     clear();
     //you can then store the new pokemon wherever

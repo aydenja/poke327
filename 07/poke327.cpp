@@ -68,7 +68,9 @@ void Pokemon_t::set_moves(){
     if(pokemon_moves[i].version_group_id == 16 || pokemon_moves[i].version_group_id == 20){ //assignment spec says 19 but a lot of pokemon end up with no moves..
       if(pokemon_moves[i].pokemon_id == species_id){
         if(pokemon_moves[i].pokemon_move_method_id == 1){
-          found.push_back(i);
+          if(pokemon_moves[i].level<= level){
+            found.push_back(i);
+          }
         }
       }
     }
@@ -87,12 +89,24 @@ void Pokemon_t::set_moves(){
   else{
     int m1 = rand() % found.size();
     move_index_1 = pokemon_moves[found[m1]].move_id;
-
-    found.erase (found.begin()+m1);
-
-    int m2 = rand() % found.size();
-    move_index_2 = pokemon_moves[found[m2]].move_id;
+    
+    int j =0;
+    int k =0;
     num_moves =2;
+    while(j<20 && !k){
+      int m2 = rand() % found.size();
+      move_index_2 = pokemon_moves[found[m2]].move_id;
+      if(move_index_2 != move_index_1){
+        k=1;
+      }
+      j++;
+    }
+    if(j==20){
+      move_index_2 = -1;
+      num_moves =1;
+    }
+    
+      
   }
 
 
