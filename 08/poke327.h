@@ -3,9 +3,11 @@
 
 # include <stdlib.h>
 # include <assert.h>
+# include <vector>
 
 # include "heap.h"
 # include "character.h"
+# include "pokemon.h"
 
 #define malloc(size) ({          \
   void *_tmp;                    \
@@ -40,6 +42,7 @@ typedef int16_t pair_t[num_dims];
 #define WORLD_SIZE         401
 #define MIN_TRAINERS       7   
 #define ADD_TRAINER_PROB   50
+#define ENCOUNTER_PROB     10
 
 #define mappair(pair) (m->map[pair[dim_y]][pair[dim_x]])
 #define mapxy(x, y) (m->map[y][x])
@@ -104,6 +107,7 @@ class Character {
 
 class Pc : public Character {
  public:
+  std::vector <Pokemon *> poke;
 };
 
 class Npc : public Character {
@@ -112,6 +116,7 @@ class Npc : public Character {
   movement_type_t mtype;
   int defeated;
   pair_t dir;
+  std::vector <Pokemon *> poke;
 };
 
 class World {

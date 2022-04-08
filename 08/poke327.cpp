@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <assert.h>
 #include <unistd.h>
+#include <ncurses.h>
 
 #include "heap.h"
 #include "poke327.h"
@@ -672,6 +673,45 @@ void rand_pos(pair_t pos)
   pos[dim_y] = (rand() % (MAP_Y - 2)) + 1;
 }
 
+int get_rand_level(){
+  int md = (abs(world.cur_idx[dim_x] - (WORLD_SIZE / 2)) +
+            abs(world.cur_idx[dim_x] - (WORLD_SIZE / 2)));
+  int minl, maxl;
+  
+  if (md <= 200) {
+    minl = 1;
+    maxl = md / 2;
+  } else {
+    minl = (md - 200) / 2;
+    maxl = 100;
+  }
+  if (minl < 1) {
+    minl = 1;
+  }
+  if (minl > 100) {
+    minl = 100;
+  }
+  if (maxl < 1) {
+    maxl = 1;
+  }
+  if (maxl > 100) {
+    maxl = 100;
+  }
+
+  return (rand() % (maxl - minl + 1) + minl);
+}
+
+void give_npc_poke(Npc *c){
+  Pokemon *p1 = new Pokemon(get_rand_level());
+  c->poke.push_back(p1);
+  int k =0;
+  while((rand() % 10 < 5) && (k<5)){
+    p1 = new Pokemon(get_rand_level());
+    c->poke.push_back(p1);
+    k++;
+  }
+}
+
 void new_hiker()
 {
   pair_t pos;
@@ -694,10 +734,13 @@ void new_hiker()
   c->defeated = 0;
   c->symbol = 'h';
   c->next_turn = 0;
+  give_npc_poke(c);
   heap_insert(&world.cur_map->turn, c);
 
   //  printf("Hiker at %d,%d\n", pos[dim_x], pos[dim_y]);
 }
+
+
 
 void new_rival()
 {
@@ -722,6 +765,7 @@ void new_rival()
   c->defeated = 0;
   c->symbol = 'r';
   c->next_turn = 0;
+  give_npc_poke(c);
   heap_insert(&world.cur_map->turn, c);
 }
 
@@ -763,6 +807,7 @@ void new_char_other()
   rand_dir(c->dir);
   c->defeated = 0;
   c->next_turn = 0;
+  give_npc_poke(c);
   heap_insert(&world.cur_map->turn, c);
 }
 
@@ -1058,12 +1103,61 @@ void leave_map(pair_t d)
   new_map(0);
 }
 
+
+void choose_start(){
+  clear();
+  mvprintw(0,0,"Choose your starter pokemon! (Use 1, 2, or 3 to select)");
+  Pokemon * p1 = new Pokemon(1);
+  Pokemon * p2 = new Pokemon(1);
+  Pokemon * p3 = new Pokemon(1);
+
+  mvprintw(1,0, "Choice #1 -> %s", p1->get_species());
+  mvprintw(2,0, "Choice #2 -> %s", p2->get_species());
+  mvprintw(3,0, "Choice #3 -> %s", p3->get_species());
+  refresh();
+  int input;
+  int chosen = 0;
+
+  while (!chosen){
+    input = getch();
+    switch (input){
+      case '1': {
+        world.pc.poke.push_back(p1);
+        chosen =1;
+        break;
+      }
+      case '2': {
+        world.pc.poke.push_back(p2);
+        chosen =1;
+        break;
+      }
+      case '3': {
+        world.pc.poke.push_back(p3);
+        chosen =1;
+        break;
+      }
+      default: {
+        mvprintw(5,0, "Invalid Input! %d", input);
+        break;
+      }
+    }
+  }
+
+  clear();
+  mvprintw(0,0,"You chose %s! Press any key to enter the game!", world.pc.poke[0]->get_species());
+  refresh();
+  getch();
+  io_display();
+}
+
 void game_loop()
 {
   Character *c;
   Npc *n;
   Pc *p;
   pair_t d;
+
+  choose_start();
   
   while (!world.quit) {
     c = (Character *) heap_remove_min(&world.cur_map->turn);
@@ -1089,6 +1183,12 @@ void game_loop()
     c->next_turn += move_cost[n ? n->ctype : char_pc]
                              [world.cur_map->map[d[dim_y]][d[dim_x]]];
 
+    if (p && (c->pos[dim_y] != d[dim_y] || c->pos[dim_x] != d[dim_x]) &&
+        (world.cur_map->map[d[dim_y]][d[dim_x]] == ter_grass) &&
+        (rand() % 100 < ENCOUNTER_PROB)) {
+      io_encounter_pokemon();
+    }
+    
     c->pos[dim_y] = d[dim_y];
     c->pos[dim_x] = d[dim_x];
 
@@ -1103,10 +1203,6 @@ int main(int argc, char *argv[])
   //  char c;
   //  int x, y;
 
-  db_parse(true);
-
-  return 0;
-
   if (argc == 2) {
     seed = atoi(argv[1]);
   } else {
@@ -1119,6 +1215,8 @@ int main(int argc, char *argv[])
 
   io_init_terminal();
   
+  db_parse(false);
+
   init_world();
 
   /* print_hiker_dist(); */

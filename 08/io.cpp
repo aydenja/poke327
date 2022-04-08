@@ -7,6 +7,7 @@
 #include "io.h"
 #include "character.h"
 #include "poke327.h"
+#include "pokemon.h"
 
 typedef struct io_message {
   /* Will print " --more-- " at end of line when another message follows. *
@@ -364,14 +365,27 @@ void io_pokemon_center()
 void io_battle(Character *aggressor, Character *defender)
 {
   Npc *npc;
+  if (!(npc = dynamic_cast<Npc *>(aggressor))) {
+    npc = dynamic_cast<Npc *>(defender);
+  }
+
+  clear();
+  int k;
+  mvprintw(0,0, "npc pokemon");
+  for(k=0; k<(int)npc->poke.size(); k++){
+    mvprintw(k+1, 0, "%s", npc->poke[k]->get_species());
+  }
+  for(k=0; k<(int)world.pc.poke.size(); k++){
+    mvprintw(k+1, 20, "%s", world.pc.poke[k]->get_species());
+  }
+  refresh();
+  getch();
 
   io_display();
   mvprintw(0, 0, "Aww, how'd you get so strong?  You and your pokemon must share a special bond!");
   refresh();
   getch();
-  if (!(npc = dynamic_cast<Npc *>(aggressor))) {
-    npc = dynamic_cast<Npc *>(defender);
-  }
+  
   
   npc->defeated = 1;
   if (npc->ctype == char_hiker || npc->ctype == char_rival) {
@@ -467,10 +481,10 @@ void io_teleport_world(pair_t dest)
   refresh();
   echo();
   curs_set(1);
-  mvscanw(0, 21, "%d", &x);
+  mvscanw(0, 21, (char *) "%d", &x);
   mvprintw(0, 0, "Enter y [-200, 200]:          ");
   refresh();
-  mvscanw(0, 21, "%d", &y);
+  mvscanw(0, 21, (char *) "%d", &y);
   refresh();
   noecho();
   curs_set(0);
@@ -496,6 +510,50 @@ void io_teleport_world(pair_t dest)
 
   new_map(1);
   io_teleport_pc(dest);
+}
+
+void io_encounter_pokemon()
+{
+  Pokemon *p;
+  
+  int md = (abs(world.cur_idx[dim_x] - (WORLD_SIZE / 2)) +
+            abs(world.cur_idx[dim_x] - (WORLD_SIZE / 2)));
+  int minl, maxl;
+  
+  if (md <= 200) {
+    minl = 1;
+    maxl = md / 2;
+  } else {
+    minl = (md - 200) / 2;
+    maxl = 100;
+  }
+  if (minl < 1) {
+    minl = 1;
+  }
+  if (minl > 100) {
+    minl = 100;
+  }
+  if (maxl < 1) {
+    maxl = 1;
+  }
+  if (maxl > 100) {
+    maxl = 100;
+  }
+
+  p = new Pokemon(rand() % (maxl - minl + 1) + minl);
+
+  //  std::cerr << *p << std::endl << std::endl;
+
+  io_queue_message("%s%s%s: HP:%d ATK:%d DEF:%d SPATK:%d SPDEF:%d SPEED:%d %s",
+                   p->is_shiny() ? "*" : "", p->get_species(),
+                   p->is_shiny() ? "*" : "", p->get_hp(), p->get_atk(),
+                   p->get_def(), p->get_spatk(), p->get_spdef(),
+                   p->get_speed(), p->get_gender_string());
+  io_queue_message("%s's moves: %s %s", p->get_species(),
+                   p->get_move(0), p->get_move(1));
+
+  // Later on, don't delete if captured
+  delete p;
 }
 
 void io_handle_input(pair_t dest)
