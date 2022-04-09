@@ -420,6 +420,9 @@ int get_move_pri(int pcinx, int npcinx, Pokemon *pc, Pokemon *npc){
 }
 
 bool hit (int m){
+  if(moves[m].accuracy == -1){
+    return true;
+  }
   if ((rand() % 100) <= moves[m].accuracy){
     return true;
   }
@@ -430,12 +433,12 @@ bool hit (int m){
 
 int get_damage(Pokemon *p, int m){
   if(hit(m)){
-    clear();
-    mvprintw(11, 0 , "level %d | atk%d def%d bs%d pow%d auc%d", p->get_level(), p->get_atk(), p->get_def(), p->s->base_stat[stat_speed], moves[m].power,moves[m].accuracy);
+    //clear();
+    //mvprintw(11, 0 , "level %d | atk%d def%d bs%d pow%d auc%d", p->get_level(), p->get_atk(), p->get_def(), p->s->base_stat[stat_speed], moves[m].power,moves[m].accuracy);
     int top = (int)(((p->get_level() *2)/(double)5)+2);
     top = (int)(top * (double)moves[m].power * ((double)p->get_atk()/(double)(p->get_def())));
     top = (int)(((double)top /50.0) +2);
-    mvprintw(12, 0, "top after %d", top);
+    //mvprintw(12, 0, "top after %d", top);
     double crit;
     int tv = p->s->base_stat[stat_speed]/2;
     double stab =1;
@@ -447,9 +450,9 @@ int get_damage(Pokemon *p, int m){
       crit = 1;
     } 
     double random = (rand() % (100 + 1 - 85) + 85)/100.0;
-    mvprintw(13, 0, "top after2 %d %f", (int)((double)top * crit * random * stab * type), random);
-    refresh();
-    getch();
+    //mvprintw(13, 0, "top after2 %d %f", (int)((double)top * crit * random * stab * type), random);
+    //refresh();
+    //getch();
     top = (int)((double)top * crit * random * stab * type);
     if (top == 0){
       return 1;
@@ -473,6 +476,15 @@ int my_max(int x, int y){
   }
 }
 
+int my_min(int x, int y){
+  if(x<=y){
+    return x;
+  }
+  else {
+    return y;
+  }
+}
+
 void take_damage(Pokemon *p, int dam){
   int nhp = p->effective_stat[stat_hp];
   nhp = nhp -dam;
@@ -483,37 +495,133 @@ void take_damage(Pokemon *p, int dam){
 void case_1_moves(int pri, Pokemon * pc, Pokemon * npc, int pc_dam, int npc_dam, int pc_move, int npc_move){
   clear();
   if(pri){//npc first
-    mvprintw(0, 0, "%s uses %s and it does %d damage!", npc->get_species(), moves[npc_move].identifier, npc_dam);
-    mvprintw(2, 0, "Press any key to advance...");
-    refresh();
-    getch();
-    take_damage(pc, npc_dam);
-
-    clear();
-    mvprintw(0, 0, "%s uses %s and it does %d damage!", pc->get_species(), moves[pc_move].identifier, pc_dam);
-    mvprintw(2, 0, "Press any key to advance...");
-    refresh();
-    getch();
-    take_damage(npc, pc_dam);
+    if(npc_dam >0){
+      mvprintw(0, 0, "%s uses %s and it does %d damage!", npc->get_species(), moves[npc_move].identifier, npc_dam);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(pc, npc_dam);
+    }
+    else{
+      mvprintw(0, 0, "%s uses %s and it misses!", npc->get_species(), moves[npc_move].identifier);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(pc, npc_dam);
+    }
+   
+    if(pc_dam >0){
+      clear();
+      mvprintw(0, 0, "%s uses %s and it does %d damage!", pc->get_species(), moves[pc_move].identifier, pc_dam);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(npc, pc_dam);
+    }
+    else{
+      clear();
+      mvprintw(0, 0, "%s uses %s and it misses!", pc->get_species(), moves[pc_move].identifier);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(npc, pc_dam);
+    }
+    
 
   }
   else{ // player first
-    mvprintw(0, 0, "%s uses %s and it does %d damage!", pc->get_species(), moves[pc_move].identifier, pc_dam);
-    mvprintw(2, 0, "Press any key to advance...");
-    refresh();
-    getch();
-    take_damage(npc, pc_dam);
+    if(pc_dam >0){
+      clear();
+      mvprintw(0, 0, "%s uses %s and it does %d damage!", pc->get_species(), moves[pc_move].identifier, pc_dam);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(npc, pc_dam);
+    }
+    else{
+      clear();
+      mvprintw(0, 0, "%s uses %s and it misses!", pc->get_species(), moves[pc_move].identifier);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(npc, pc_dam);
+    }
 
-    clear();
-    mvprintw(0, 0, "%s uses %s and it does %d damage!", npc->get_species(), moves[npc_move].identifier, npc_dam);
-    mvprintw(2, 0, "Press any key to advance...");
-    refresh();
-    getch();
-    take_damage(pc, npc_dam);
+    if(npc_dam >0){
+      clear();
+      mvprintw(0, 0, "%s uses %s and it does %d damage!", npc->get_species(), moves[npc_move].identifier, npc_dam);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(pc, npc_dam);
+    }
+    else{
+      clear();
+      mvprintw(0, 0, "%s uses %s and it misses!", npc->get_species(), moves[npc_move].identifier);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(pc, npc_dam);
+    }
   }
 }
 
+int show_bag(){
+  clear();
+  mvprintw(0, 0, "Select an item to use:");
+  mvprintw(1, 0, "1. Pokeball x%d", world.pc.num_pb);
+  mvprintw(2, 0, "2. Potion x%d", world.pc.num_po);
+  mvprintw(3, 0, "3. Revive x%d", world.pc.num_rev);
+  refresh();
+  int valid = false;
+  int input;
+  while(!valid){
+    input =getch();
+    switch (input){
+      case '1':
+      case '2':
+      case '3':
+        return input;
+      default:
+        mvprintw(5, 0, "%c is not a valid input!", input);
+    }
+  }
+  return 0;
 
+}
+
+void case_2_move(int npc_dam, int npc_move, Pokemon * npc, Pokemon * pc){
+  clear();
+  if(npc_dam >0){
+      mvprintw(0, 0, "%s uses %s and it does %d damage!", npc->get_species(), moves[npc_move].identifier, npc_dam);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(pc, npc_dam);
+    }
+    else{
+      mvprintw(0, 0, "%s uses %s and it misses!", npc->get_species(), moves[npc_move].identifier);
+      mvprintw(2, 0, "Press any key to advance...");
+      refresh();
+      getch();
+      take_damage(pc, npc_dam);
+    }
+}
+
+void use_potion(Pokemon *p){
+  clear();
+  int ihp = p->get_hp();
+  int nhp = my_min(p->start_hp, ihp+20);
+
+  p->effective_stat[stat_hp] = nhp;
+
+  mvprintw(0, 0, "You used a potion on %s, their hp went from %d -> %d!", p->get_species(), ihp, p->get_hp());
+  mvprintw(2, 0, "Press any key to contine...");
+
+  refresh();
+  getch();
+
+}
 
 void io_battle(Character *aggressor, Character *defender)
 {
@@ -533,6 +641,10 @@ void io_battle(Character *aggressor, Character *defender)
   Pokemon *npc_cp = npc->get_next();
 
   while( (!npc->is_done()) && (!world.pc.is_done())){
+    if(npc_cp->get_hp() == 0){
+      npc_cp = npc->get_next();
+    }
+    
     clear();
     mvprintw(0,0, "Opponent's Pokemon:");
     mvprintw(1,0,"%s LV:%d", npc_cp->get_species(), npc_cp->get_level());
@@ -548,20 +660,51 @@ void io_battle(Character *aggressor, Character *defender)
     refresh();
     int input;
     input = getch();
+    int pc_move;
+    int npc_move;
+    int mp;
+    int pc_dam;
+    int npc_dam;
     switch (input){
       case '1':
-        int pc_move;
         pc_move = select_move(pc_cp);
-        int npc_move;
         npc_move = get_npc_move(npc_cp);
-        int mp;
         mp = get_move_pri(pc_move, npc_move, pc_cp, npc_cp);
-        int pc_dam;
         pc_dam = get_damage(pc_cp, pc_move);
-        int npc_dam;
         npc_dam = get_damage(npc_cp, npc_move);
         case_1_moves(mp, pc_cp, npc_cp, pc_dam, npc_dam, pc_move, npc_move);
-
+        break;
+      case '2':
+        int item;
+        item = show_bag();
+        npc_move = get_npc_move(npc_cp);
+        npc_dam = get_damage(npc_cp, npc_move);
+        switch (item){
+          case '1':
+            clear();
+            mvprintw(0, 0, "You cant use a pokeball in a trainer battle");
+            mvprintw(1, 0, "Press any key to continue...");
+            getch();
+            break;
+          case '2':
+            if(world.pc.num_po >0){
+              use_potion(pc_cp);
+              case_2_move(npc_dam, npc_move, npc_cp, pc_cp);
+              world.pc.num_po--;
+            }
+            else{
+              clear();
+              mvprintw(0, 0, "You do not have enough potions!");
+              mvprintw(1, 0, "Press any key to continue...");
+              getch();
+            }
+            break;
+          case '3':
+            //TODO::
+            break;
+          default:
+            break; 
+        }
         break;
       case 'q': //REMOVE
         goto exitloop;

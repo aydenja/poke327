@@ -109,6 +109,9 @@ class Character {
 
 class Pc : public Character {
  public:
+  int num_rev;
+  int num_pb;
+  int num_po;
 };
 
 class Npc : public Character {

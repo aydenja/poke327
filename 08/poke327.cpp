@@ -867,6 +867,9 @@ void init_pc()
   world.pc.pos[dim_x] = x;
   world.pc.pos[dim_y] = y;
   world.pc.symbol = '@';
+  world.pc.num_pb = 20;
+  world.pc.num_rev = 20;
+  world.pc.num_po = 20;
 
   world.cur_map->cmap[y][x] = &world.pc;
   world.pc.next_turn = 0;
