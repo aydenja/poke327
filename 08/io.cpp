@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <cstring>
 
 #include "io.h"
 #include "character.h"
@@ -623,6 +624,119 @@ void use_potion(Pokemon *p){
 
 }
 
+void get_oofed_pokemon(std::vector<Pokemon *> &v){
+  while(v.size()){
+    v.pop_back();
+  }
+  int i;
+  for(i=0; i<(int)world.pc.poke.size(); i++){
+    if(world.pc.poke[i]->get_hp() == 0){
+      v.push_back(world.pc.poke[i]);
+    }
+  }
+}
+
+void call_revive(Pokemon *p){
+  clear();
+  int ihp = p->get_hp();
+  int nhp = p->start_hp /2;
+
+  p->effective_stat[stat_hp] = nhp;
+
+  mvprintw(0, 0, "You used a revive on %s, their hp went from %d -> %d!", p->get_species(), ihp, p->get_hp());
+  mvprintw(2, 0, "Press any key to contine...");
+
+  refresh();
+  getch();
+}
+
+void use_revive(std::vector<Pokemon *> &v){
+  clear();
+  mvprintw(0, 0, "Select a pokemon to revive:");
+  int i;
+  for(i=0; i<(int)v.size(); i++){
+    mvprintw(i+1, 0, "%d. %s", i+1, v[i]->get_species());
+  }
+  refresh();
+  int input = getchar();
+  int a =-1;
+  while(a == -1){
+    refresh();
+    switch (input){
+      case '1':
+        if(v.size()>= 1){
+          a =0;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+      
+      case '2':
+        if(v.size()>=2){
+          a =1;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      case '3':
+        if(v.size()>= 3){
+          a =2;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      case '4':
+        if(v.size()>= 4){
+          a =3;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      case '5':
+        if(v.size()>= 5){
+          a =4;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      case '6':
+        if(v.size()>= 6){
+          a =5;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      
+    }
+  }
+
+  call_revive(v[a]);
+  
+}
+
 void io_battle(Character *aggressor, Character *defender)
 {
   Npc *npc;
@@ -642,7 +756,13 @@ void io_battle(Character *aggressor, Character *defender)
 
   while( (!npc->is_done()) && (!world.pc.is_done())){
     if(npc_cp->get_hp() == 0){
+      char old[40];
+      strcpy(old, npc_cp->get_species());
       npc_cp = npc->get_next();
+      clear();
+      mvprintw(0,0,"You knocked out %s, %s enters the battle!", old, npc_cp->get_species());
+      mvprintw(1,0, "Press any key to continue...");
+      getch();
     }
     
     clear();
@@ -700,11 +820,41 @@ void io_battle(Character *aggressor, Character *defender)
             }
             break;
           case '3':
-            //TODO::
+            
+            if(world.pc.num_rev >0){
+              std::vector<Pokemon *> v;
+              get_oofed_pokemon(v);
+              if((int)v.size() > 0){
+                use_revive(v);
+                world.pc.num_rev--;
+              }
+              else{
+                clear();
+                mvprintw(0, 0, "None of your pokemon have fainted!");
+                mvprintw(1, 0, "Press any key to continue...");
+                getch();
+              }
+              
+            }
+            else{
+              clear();
+              mvprintw(0, 0, "You do not have enough revives!");
+              mvprintw(1, 0, "Press any key to continue...");
+              getch();
+            }
             break;
           default:
             break; 
         }
+        break;
+      case '3':
+        clear();
+        mvprintw(0, 0, "You cant escape from a trainer battle!");
+        mvprintw(1, 0, "Press any key to continue...");
+        getch();
+        break;
+      case '4':
+        //TO switch poke
         break;
       case 'q': //REMOVE
         goto exitloop;
@@ -849,9 +999,11 @@ void io_teleport_world(pair_t dest)
   io_teleport_pc(dest);
 }
 
+
+
 void io_encounter_pokemon()
 {
-  Pokemon *p;
+  Pokemon *npc_cp;
   
   int md = (abs(world.cur_idx[dim_x] - (WORLD_SIZE / 2)) +
             abs(world.cur_idx[dim_x] - (WORLD_SIZE / 2)));
@@ -877,20 +1029,162 @@ void io_encounter_pokemon()
     maxl = 100;
   }
 
-  p = new Pokemon(rand() % (maxl - minl + 1) + minl);
+  npc_cp = new Pokemon(rand() % (maxl - minl + 1) + minl);
 
-  //  std::cerr << *p << std::endl << std::endl;
+  clear();
+  
+  mvprintw(0,0,"A wild %s appears!", npc_cp->get_species());
+  mvprintw(1,0, "Press any key to continue...");
+  getch();
 
-  io_queue_message("%s%s%s: HP:%d ATK:%d DEF:%d SPATK:%d SPDEF:%d SPEED:%d %s",
-                   p->is_shiny() ? "*" : "", p->get_species(),
-                   p->is_shiny() ? "*" : "", p->get_hp(), p->get_atk(),
-                   p->get_def(), p->get_spatk(), p->get_spdef(),
-                   p->get_speed(), p->get_gender_string());
-  io_queue_message("%s's moves: %s %s", p->get_species(),
-                   p->get_move(0), p->get_move(1));
+  clear();
+  Pokemon *pc_cp = world.pc.get_next();
+
+  while( (npc_cp->get_hp() > 0) && (!world.pc.is_done())){
+    clear();
+    mvprintw(0,0, "Wild Pokemon:");
+    mvprintw(1,0,"%s LV:%d", npc_cp->get_species(), npc_cp->get_level());
+    mvprintw(2,0, "HP: %d", npc_cp->get_hp());
+
+    mvprintw(4,0, "Your Pokemon:");
+    mvprintw(5,0,"%s LV:%d", pc_cp->get_species(), pc_cp->get_level());
+    mvprintw(6,0, "HP: %d", pc_cp->get_hp());
+
+    mvprintw(8,0, "Select an option:");
+    mvprintw(9,0, "1 - Fight   2 - Bag");
+    mvprintw(10,0, "3 - Run     4 - Pokemon");
+    refresh();
+    int input;
+    input = getch();
+    int pc_move;
+    int npc_move;
+    int mp;
+    int pc_dam;
+    int npc_dam;
+    switch (input){
+      case '1':
+        pc_move = select_move(pc_cp);
+        npc_move = get_npc_move(npc_cp);
+        mp = get_move_pri(pc_move, npc_move, pc_cp, npc_cp);
+        pc_dam = get_damage(pc_cp, pc_move);
+        npc_dam = get_damage(npc_cp, npc_move);
+        case_1_moves(mp, pc_cp, npc_cp, pc_dam, npc_dam, pc_move, npc_move);
+        break;
+      case '2':
+        int item;
+        item = show_bag();
+        npc_move = get_npc_move(npc_cp);
+        npc_dam = get_damage(npc_cp, npc_move);
+        switch (item){
+          case '1':
+            if(world.pc.num_pb >0){
+              world.pc.num_pb--;
+              clear();
+              mvprintw(0, 0, "You used a Pokeball on %s!", npc_cp->get_species());
+              mvprintw(1, 0, "Press any key to continue...");
+              getch();
+              goto exitloop1;
+            }
+            else {
+              clear();
+              mvprintw(0, 0, "You do not have enough pokeballs!");
+              mvprintw(1, 0, "Press any key to continue...");
+              getch();
+            }
+            break;
+          case '2':
+            if(world.pc.num_po >0){
+              use_potion(pc_cp);
+              case_2_move(npc_dam, npc_move, npc_cp, pc_cp);
+              world.pc.num_po--;
+            }
+            else{
+              clear();
+              mvprintw(0, 0, "You do not have enough potions!");
+              mvprintw(1, 0, "Press any key to continue...");
+              getch();
+            }
+            break;
+          case '3':
+            
+            if(world.pc.num_rev >0){
+              std::vector<Pokemon *> v;
+              get_oofed_pokemon(v);
+              if((int)v.size() > 0){
+                use_revive(v);
+                world.pc.num_rev--;
+              }
+              else{
+                clear();
+                mvprintw(0, 0, "None of your pokemon have fainted!");
+                mvprintw(1, 0, "Press any key to continue...");
+                getch();
+              }
+              
+            }
+            else{
+              clear();
+              mvprintw(0, 0, "You do not have enough revives!");
+              mvprintw(1, 0, "Press any key to continue...");
+              getch();
+            }
+            break;
+          default:
+            break; 
+        }
+        break;
+      case '3':
+        //TODO ESCAPE PB
+        break;
+      case '4':
+        //TO switch poke
+        break;
+      case 'q': //REMOVE
+        goto exitloop1;
+      default:
+        mvprintw(13, 0, "%c is not a valid input!", input);
+        break;
+    }
+
+  }
+
+  exitloop1:
+  bool del = true;
+  Pokemon * p = npc_cp;
+  if((int)world.pc.poke.size() < 6){
+    clear();
+    mvprintw(0, 0, "You caught %s!", npc_cp->get_species());
+    mvprintw(1, 0, "Press any key to continue...");
+    getch();
+    world.pc.poke.push_back(npc_cp);
+    del = false;
+
+    
+    io_queue_message("%s%s%s: HP:%d ATK:%d DEF:%d SPATK:%d SPDEF:%d SPEED:%d %s",
+                    p->is_shiny() ? "*" : "", p->get_species(),
+                    p->is_shiny() ? "*" : "", p->get_hp(), p->get_atk(),
+                    p->get_def(), p->get_spatk(), p->get_spdef(),
+                    p->get_speed(), p->get_gender_string());
+    io_queue_message("%s's moves: %s %s", p->get_species(),
+                    p->get_move(0), p->get_move(1));
+  }
+  else {
+    clear();
+    mvprintw(0, 0, "You caught %s but did not have enough space! \n%s was released back into the wild.", npc_cp->get_species(),  npc_cp->get_species());
+    mvprintw(2, 0, "Press any key to continue...");
+    getch();
+  }
+
+  
+  
+  io_display();
 
   // Later on, don't delete if captured
-  delete p;
+  if(del){
+    delete p;
+  }
+  
+  
 }
 
 void io_handle_input(pair_t dest)
