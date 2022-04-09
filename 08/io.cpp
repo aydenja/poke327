@@ -431,26 +431,32 @@ bool hit (int m){
 int get_damage(Pokemon *p, int m){
   if(hit(m)){
     clear();
-    mvprintw(11, 0 , "level %d | atk%d def%d bs%d pow%d", p->get_level(), p->get_atk(), p->get_def(), p->s->base_stat[stat_speed], moves[m].power);
-    int top = ((p->get_level() *2)/5)+2;
-    top = top * moves[m].power * (p->get_atk()/p->get_def());
-    top = (top /50) +2;
+    mvprintw(11, 0 , "level %d | atk%d def%d bs%d pow%d auc%d", p->get_level(), p->get_atk(), p->get_def(), p->s->base_stat[stat_speed], moves[m].power,moves[m].accuracy);
+    int top = (int)(((p->get_level() *2)/(double)5)+2);
+    top = (int)(top * (double)moves[m].power * ((double)p->get_atk()/(double)(p->get_def())));
+    top = (int)(((double)top /50.0) +2);
     mvprintw(12, 0, "top after %d", top);
-    int crit;
+    double crit;
     int tv = p->s->base_stat[stat_speed]/2;
-    int stab =1;
-    int type =1;
+    double stab =1;
+    double type =1;
     if ((rand() % 256) < tv){
       crit = 1.5;
     }
     else{
       crit = 1;
     } 
-    int random = rand() % (100 + 1 - 85) + 85;
-    mvprintw(13, 0, "top after2 %d", top * crit * random * stab * type);
+    double random = (rand() % (100 + 1 - 85) + 85)/100.0;
+    mvprintw(13, 0, "top after2 %d %f", (int)((double)top * crit * random * stab * type), random);
     refresh();
     getch();
-    return top * crit * random * stab * type;
+    top = (int)((double)top * crit * random * stab * type);
+    if (top == 0){
+      return 1;
+    }
+    else{
+      return top;
+    }
   }
   else{
     return 0;
