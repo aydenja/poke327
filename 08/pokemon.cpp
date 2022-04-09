@@ -11,7 +11,7 @@ static int compare_move(const void *v1, const void *v2)
 
 Pokemon::Pokemon(int level) : level(level)
 {
-  pokemon_species_db *s;
+  
   unsigned i, j;
   bool found;
 
@@ -86,6 +86,7 @@ Pokemon::Pokemon(int level) : level(level)
     effective_stat[i] = 5 + ((s->base_stat[i] + IV[i]) * 2 * level) / 100;
     if (i == 0) { // HP
       effective_stat[i] += 5 + level;
+      start_hp = effective_stat[i]; 
     }
   }
 

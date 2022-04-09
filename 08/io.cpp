@@ -8,6 +8,7 @@
 #include "character.h"
 #include "poke327.h"
 #include "pokemon.h"
+#include "db_parse.h"
 
 typedef struct io_message {
   /* Will print " --more-- " at end of line when another message follows. *
@@ -362,7 +363,149 @@ void io_pokemon_center()
   getch();
 }
 
+int select_move (Pokemon *p){
+  clear();
+  int i =0;
+  mvprintw(0, 0, "Select a move to use:");
+  while(p->move_index[i]){
+    mvprintw(i+1, 0, "%d - %s", i+1, moves[p->move_index[i]].identifier);
+    i++;
+  }
+  refresh();
+  int valid = false;
+  int input;
+  while(!valid){
+    input =getch();
+    switch (input){
+      case '1':
+        return p->move_index[0];
+      case '2':
+        return p->move_index[1];
+      default:
+        mvprintw(5, 0, "%c is not a valid input!", input);
+    }
+  }
+  return 1; 
+}
 
+int get_npc_move (Pokemon *p){
+  int i =0;
+  while(p->move_index[i]){
+    i++;
+  }
+  return p->move_index[rand() % i];
+}
+
+int get_move_pri(int pcinx, int npcinx, Pokemon *pc, Pokemon *npc){
+  int pcpri = moves[pcinx].priority;
+  int npcpri = moves[npcinx].priority;
+
+  if(pcpri == npcpri){
+    if(pc->get_speed() == npc->get_speed()){
+      return 0;
+    }
+    else if (pc->get_speed() > npc->get_speed()){
+      return 0;
+    }
+    else{
+      return 1;
+    }
+  }
+  else if (pcpri > npcpri){
+    return 0;
+  }
+  else {
+    return 1;
+  }
+}
+
+bool hit (int m){
+  if ((rand() % 100) <= moves[m].accuracy){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+int get_damage(Pokemon *p, int m){
+  if(hit(m)){
+    clear();
+    mvprintw(11, 0 , "level %d | atk%d def%d bs%d pow%d", p->get_level(), p->get_atk(), p->get_def(), p->s->base_stat[stat_speed], moves[m].power);
+    int top = ((p->get_level() *2)/5)+2;
+    top = top * moves[m].power * (p->get_atk()/p->get_def());
+    top = (top /50) +2;
+    mvprintw(12, 0, "top after %d", top);
+    int crit;
+    int tv = p->s->base_stat[stat_speed]/2;
+    int stab =1;
+    int type =1;
+    if ((rand() % 256) < tv){
+      crit = 1.5;
+    }
+    else{
+      crit = 1;
+    } 
+    int random = rand() % (100 + 1 - 85) + 85;
+    mvprintw(13, 0, "top after2 %d", top * crit * random * stab * type);
+    refresh();
+    getch();
+    return top * crit * random * stab * type;
+  }
+  else{
+    return 0;
+  }
+
+}
+
+int my_max(int x, int y){
+  if(x>=y){
+    return x;
+  }
+  else {
+    return y;
+  }
+}
+
+void take_damage(Pokemon *p, int dam){
+  int nhp = p->effective_stat[stat_hp];
+  nhp = nhp -dam;
+  p->effective_stat[stat_hp] = my_max(0, nhp);
+
+}
+
+void case_1_moves(int pri, Pokemon * pc, Pokemon * npc, int pc_dam, int npc_dam, int pc_move, int npc_move){
+  clear();
+  if(pri){//npc first
+    mvprintw(0, 0, "%s uses %s and it does %d damage!", npc->get_species(), moves[npc_move].identifier, npc_dam);
+    mvprintw(2, 0, "Press any key to advance...");
+    refresh();
+    getch();
+    take_damage(pc, npc_dam);
+
+    clear();
+    mvprintw(0, 0, "%s uses %s and it does %d damage!", pc->get_species(), moves[pc_move].identifier, pc_dam);
+    mvprintw(2, 0, "Press any key to advance...");
+    refresh();
+    getch();
+    take_damage(npc, pc_dam);
+
+  }
+  else{ // player first
+    mvprintw(0, 0, "%s uses %s and it does %d damage!", pc->get_species(), moves[pc_move].identifier, pc_dam);
+    mvprintw(2, 0, "Press any key to advance...");
+    refresh();
+    getch();
+    take_damage(npc, pc_dam);
+
+    clear();
+    mvprintw(0, 0, "%s uses %s and it does %d damage!", npc->get_species(), moves[npc_move].identifier, npc_dam);
+    mvprintw(2, 0, "Press any key to advance...");
+    refresh();
+    getch();
+    take_damage(pc, npc_dam);
+  }
+}
 
 
 
@@ -380,27 +523,51 @@ void io_battle(Character *aggressor, Character *defender)
   getch();
 
   clear();
-  Pokemon pc_cp = *world.pc.get_next();
-  Pokemon npc_cp = *npc->get_next();
+  Pokemon *pc_cp = world.pc.get_next();
+  Pokemon *npc_cp = npc->get_next();
 
   while( (!npc->is_done()) && (!world.pc.is_done())){
+    clear();
     mvprintw(0,0, "Opponent's Pokemon:");
-    mvprintw(1,0,"%s LV:%d", npc_cp.get_species(), npc_cp.get_level());
-    mvprintw(2,0, "HP: %d", npc_cp.get_hp());
+    mvprintw(1,0,"%s LV:%d", npc_cp->get_species(), npc_cp->get_level());
+    mvprintw(2,0, "HP: %d", npc_cp->get_hp());
 
     mvprintw(4,0, "Your Pokemon:");
-    mvprintw(5,0,"%s LV:%d", pc_cp.get_species(), pc_cp.get_level());
-    mvprintw(6,0, "HP: %d", pc_cp.get_hp());
+    mvprintw(5,0,"%s LV:%d", pc_cp->get_species(), pc_cp->get_level());
+    mvprintw(6,0, "HP: %d", pc_cp->get_hp());
 
     mvprintw(8,0, "Select an option:");
     mvprintw(9,0, "1 - Fight   2 - Bag");
     mvprintw(10,0, "3 - Run     4 - Pokemon");
-    int input = getch();
-    input++; //REMOVE
+    refresh();
+    int input;
+    input = getch();
+    switch (input){
+      case '1':
+        int pc_move;
+        pc_move = select_move(pc_cp);
+        int npc_move;
+        npc_move = get_npc_move(npc_cp);
+        int mp;
+        mp = get_move_pri(pc_move, npc_move, pc_cp, npc_cp);
+        int pc_dam;
+        pc_dam = get_damage(pc_cp, pc_move);
+        int npc_dam;
+        npc_dam = get_damage(npc_cp, npc_move);
+        case_1_moves(mp, pc_cp, npc_cp, pc_dam, npc_dam, pc_move, npc_move);
 
-    break;
+        break;
+      case 'q': //REMOVE
+        goto exitloop;
+      default:
+        mvprintw(13, 0, "%c is not a valid input!", input);
+        break;
+    }
 
-  } 
+
+  }
+
+  exitloop: 
 
   io_display();
   mvprintw(0, 0, "Aww, how'd you get so strong?  You and your pokemon must share a special bond!");
