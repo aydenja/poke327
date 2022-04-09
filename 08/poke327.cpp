@@ -23,6 +23,26 @@ typedef struct queue_node {
 
 World world;
 
+ bool Character::is_done (){
+  int i;
+  for(i=0; i<(int)poke.size(); i++){
+    if(poke[i]->get_hp() > 0){
+      return false;
+    }
+  }
+  return true;
+}
+
+Pokemon * Character::get_next(){
+  int i;
+  for(i=0; i<(int)poke.size(); i++){
+    if(poke[i]->get_hp() > 0){
+      return poke[i];
+    }
+  }
+  return 0;
+}
+
 pair_t all_dirs[8] = {
   { -1, -1 },
   { -1,  0 },

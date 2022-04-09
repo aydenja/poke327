@@ -101,13 +101,14 @@ class Character {
   pair_t pos;
   char symbol;
   int next_turn;
-
+  std::vector <Pokemon *> poke;
+  bool is_done();
+  Pokemon * get_next();
   virtual ~Character() {}
 };
 
 class Pc : public Character {
  public:
-  std::vector <Pokemon *> poke;
 };
 
 class Npc : public Character {
@@ -116,7 +117,6 @@ class Npc : public Character {
   movement_type_t mtype;
   int defeated;
   pair_t dir;
-  std::vector <Pokemon *> poke;
 };
 
 class World {

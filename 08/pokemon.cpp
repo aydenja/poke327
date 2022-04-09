@@ -98,6 +98,10 @@ const char *Pokemon::get_species() const
   return species[pokemon_species_index].identifier;
 }
 
+int Pokemon::get_level(){
+  return level;
+}
+
 int Pokemon::get_hp() const
 {
   return effective_stat[stat_hp];

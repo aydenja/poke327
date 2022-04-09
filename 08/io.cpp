@@ -362,6 +362,10 @@ void io_pokemon_center()
   getch();
 }
 
+
+
+
+
 void io_battle(Character *aggressor, Character *defender)
 {
   Npc *npc;
@@ -370,16 +374,33 @@ void io_battle(Character *aggressor, Character *defender)
   }
 
   clear();
-  int k;
-  mvprintw(0,0, "npc pokemon");
-  for(k=0; k<(int)npc->poke.size(); k++){
-    mvprintw(k+1, 0, "%s", npc->poke[k]->get_species());
-  }
-  for(k=0; k<(int)world.pc.poke.size(); k++){
-    mvprintw(k+1, 20, "%s", world.pc.poke[k]->get_species());
-  }
-  refresh();
+  
+  mvprintw(0,0,"You have entered a battle with %c!", npc->symbol);
+  mvprintw(1,0, "Press any key to continue...");
   getch();
+
+  clear();
+  Pokemon pc_cp = *world.pc.get_next();
+  Pokemon npc_cp = *npc->get_next();
+
+  while( (!npc->is_done()) && (!world.pc.is_done())){
+    mvprintw(0,0, "Opponent's Pokemon:");
+    mvprintw(1,0,"%s LV:%d", npc_cp.get_species(), npc_cp.get_level());
+    mvprintw(2,0, "HP: %d", npc_cp.get_hp());
+
+    mvprintw(4,0, "Your Pokemon:");
+    mvprintw(5,0,"%s LV:%d", pc_cp.get_species(), pc_cp.get_level());
+    mvprintw(6,0, "HP: %d", pc_cp.get_hp());
+
+    mvprintw(8,0, "Select an option:");
+    mvprintw(9,0, "1 - Fight   2 - Bag");
+    mvprintw(10,0, "3 - Run     4 - Pokemon");
+    int input = getch();
+    input++; //REMOVE
+
+    break;
+
+  } 
 
   io_display();
   mvprintw(0, 0, "Aww, how'd you get so strong?  You and your pokemon must share a special bond!");
