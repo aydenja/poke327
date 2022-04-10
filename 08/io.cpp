@@ -437,7 +437,11 @@ int get_damage(Pokemon *p, int m){
     //clear();
     //mvprintw(11, 0 , "level %d | atk%d def%d bs%d pow%d auc%d", p->get_level(), p->get_atk(), p->get_def(), p->s->base_stat[stat_speed], moves[m].power,moves[m].accuracy);
     int top = (int)(((p->get_level() *2)/(double)5)+2);
-    top = (int)(top * (double)moves[m].power * ((double)p->get_atk()/(double)(p->get_def())));
+    double pow = moves[m].power;
+    if (pow == -1){
+      pow = 20;
+    }
+    top = (int)(top * pow * ((double)p->get_atk()/(double)(p->get_def())));
     top = (int)(((double)top /50.0) +2);
     //mvprintw(12, 0, "top after %d", top);
     double crit;
@@ -455,7 +459,7 @@ int get_damage(Pokemon *p, int m){
     //refresh();
     //getch();
     top = (int)((double)top * crit * random * stab * type);
-    if (top == 0){
+    if (top <= 0){
       return 1;
     }
     else{
@@ -636,6 +640,18 @@ void get_oofed_pokemon(std::vector<Pokemon *> &v){
   }
 }
 
+void get_ava_pokemon(std::vector<Pokemon *> &v){
+  while(v.size()){
+    v.pop_back();
+  }
+  int i;
+  for(i=0; i<(int)world.pc.poke.size(); i++){
+    if(world.pc.poke[i]->get_hp() > 0){
+      v.push_back(world.pc.poke[i]);
+    }
+  }
+}
+
 void call_revive(Pokemon *p){
   clear();
   int ihp = p->get_hp();
@@ -648,6 +664,93 @@ void call_revive(Pokemon *p){
 
   refresh();
   getch();
+}
+
+Pokemon * switch_poke(std::vector<Pokemon *> &v){
+  clear();
+  mvprintw(0, 0, "Select a pokemon to use:");
+  int i;
+  for(i=0; i<(int)v.size(); i++){
+    mvprintw(i+1, 0, "%d. %s", i+1, v[i]->get_species());
+  }
+  refresh();
+  int input = getchar();
+  int a =-1;
+  while(a == -1){
+    refresh();
+    switch (input){
+      case '1':
+        if(v.size()>= 1){
+          a =0;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+      
+      case '2':
+        if(v.size()>=2){
+          a =1;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      case '3':
+        if(v.size()>= 3){
+          a =2;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      case '4':
+        if(v.size()>= 4){
+          a =3;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      case '5':
+        if(v.size()>= 5){
+          a =4;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      case '6':
+        if(v.size()>= 6){
+          a =5;
+        }
+        else{
+          mvprintw (8, 0, "Not a valid input!");
+          refresh();
+          input = getchar();
+        }
+        break;
+
+      
+    }
+  }
+
+  return v[a];
+  
 }
 
 void use_revive(std::vector<Pokemon *> &v){
@@ -762,7 +865,20 @@ void io_battle(Character *aggressor, Character *defender)
       clear();
       mvprintw(0,0,"You knocked out %s, %s enters the battle!", old, npc_cp->get_species());
       mvprintw(1,0, "Press any key to continue...");
+      refresh();
       getch();
+    }
+    
+
+    if(pc_cp->get_hp() == 0){
+      clear();
+      mvprintw(0,0,"%s has fainted!", pc_cp->get_species());
+      mvprintw(1,0, "Press any key to continue...");
+      refresh();
+      getch();
+      std::vector<Pokemon *> w;
+      get_ava_pokemon(w);
+      pc_cp = switch_poke(w);
     }
     
     clear();
@@ -1041,6 +1157,19 @@ void io_encounter_pokemon()
   Pokemon *pc_cp = world.pc.get_next();
 
   while( (npc_cp->get_hp() > 0) && (!world.pc.is_done())){
+    
+    if(pc_cp->get_hp() == 0){
+      clear();
+      mvprintw(0,0,"%s has fainted!", pc_cp->get_species());
+      mvprintw(1,0, "Press any key to continue...");
+      refresh();
+      getch();
+      std::vector<Pokemon *> w;
+      get_ava_pokemon(w);
+      pc_cp = switch_poke(w);
+    }
+    
+    
     clear();
     mvprintw(0,0, "Wild Pokemon:");
     mvprintw(1,0,"%s LV:%d", npc_cp->get_species(), npc_cp->get_level());
