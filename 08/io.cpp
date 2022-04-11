@@ -970,10 +970,23 @@ void io_battle(Character *aggressor, Character *defender)
         getch();
         break;
       case '4':
-        //TO switch poke
+      {
+        clear();
+        mvprintw(0,0,"You brought %s back!", pc_cp->get_species());
+        mvprintw(1,0, "Press any key to continue...");
+        refresh();
+        getch();
+        std::vector<Pokemon *> l;
+        get_ava_pokemon(l);
+        pc_cp = switch_poke(l);
+        npc_move = get_npc_move(npc_cp);
+        npc_dam = get_damage(npc_cp, npc_move);
+        case_2_move(npc_dam, npc_move, npc_cp, pc_cp);
         break;
+      }
       case 'q': //REMOVE
         goto exitloop;
+        break;
       default:
         mvprintw(13, 0, "%c is not a valid input!", input);
         break;
@@ -985,7 +998,13 @@ void io_battle(Character *aggressor, Character *defender)
   exitloop: 
 
   io_display();
-  mvprintw(0, 0, "Aww, how'd you get so strong?  You and your pokemon must share a special bond!");
+  if(npc->is_done()){
+    mvprintw(0, 0, "Aww, how'd you get so strong?  You and your pokemon must share a special bond!");
+  }
+  else {
+    mvprintw(0, 0, "What's important is that you never give up, even if you lose!");
+  }
+  
   refresh();
   getch();
   
@@ -1155,8 +1174,9 @@ void io_encounter_pokemon()
 
   clear();
   Pokemon *pc_cp = world.pc.get_next();
+  bool caught = false;
 
-  while( (npc_cp->get_hp() > 0) && (!world.pc.is_done())){
+  while( (npc_cp->get_hp() > 0) && (!world.pc.is_done()) && !caught){
     
     if(pc_cp->get_hp() == 0){
       clear();
@@ -1212,7 +1232,7 @@ void io_encounter_pokemon()
               mvprintw(0, 0, "You used a Pokeball on %s!", npc_cp->get_species());
               mvprintw(1, 0, "Press any key to continue...");
               getch();
-              goto exitloop1;
+              caught = true;
             }
             else {
               clear();
@@ -1266,10 +1286,23 @@ void io_encounter_pokemon()
         //TODO ESCAPE PB
         break;
       case '4':
-        //TO switch poke
+        {
+        clear();
+        mvprintw(0,0,"You brought %s back!", pc_cp->get_species());
+        mvprintw(1,0, "Press any key to continue...");
+        refresh();
+        getch();
+        std::vector<Pokemon *> l;
+        get_ava_pokemon(l);
+        pc_cp = switch_poke(l);
+        npc_move = get_npc_move(npc_cp);
+        npc_dam = get_damage(npc_cp, npc_move);
+        case_2_move(npc_dam, npc_move, npc_cp, pc_cp);
+        break;
+      }
         break;
       case 'q': //REMOVE
-        goto exitloop1;
+        caught = true;
       default:
         mvprintw(13, 0, "%c is not a valid input!", input);
         break;
@@ -1277,34 +1310,40 @@ void io_encounter_pokemon()
 
   }
 
-  exitloop1:
   bool del = true;
   Pokemon * p = npc_cp;
-  if((int)world.pc.poke.size() < 6){
-    clear();
-    mvprintw(0, 0, "You caught %s!", npc_cp->get_species());
-    mvprintw(1, 0, "Press any key to continue...");
-    getch();
-    world.pc.poke.push_back(npc_cp);
-    del = false;
+  if (caught){
+    if((int)world.pc.poke.size() < 6){
+      clear();
+      mvprintw(0, 0, "You caught %s!", npc_cp->get_species());
+      mvprintw(1, 0, "Press any key to continue...");
+      getch();
+      world.pc.poke.push_back(npc_cp);
+      del = false;
 
-    
-    io_queue_message("%s%s%s: HP:%d ATK:%d DEF:%d SPATK:%d SPDEF:%d SPEED:%d %s",
-                    p->is_shiny() ? "*" : "", p->get_species(),
-                    p->is_shiny() ? "*" : "", p->get_hp(), p->get_atk(),
-                    p->get_def(), p->get_spatk(), p->get_spdef(),
-                    p->get_speed(), p->get_gender_string());
-    io_queue_message("%s's moves: %s %s", p->get_species(),
-                    p->get_move(0), p->get_move(1));
+      
+      io_queue_message("%s%s%s: HP:%d ATK:%d DEF:%d SPATK:%d SPDEF:%d SPEED:%d %s",
+                      p->is_shiny() ? "*" : "", p->get_species(),
+                      p->is_shiny() ? "*" : "", p->get_hp(), p->get_atk(),
+                      p->get_def(), p->get_spatk(), p->get_spdef(),
+                      p->get_speed(), p->get_gender_string());
+      io_queue_message("%s's moves: %s %s", p->get_species(),
+                      p->get_move(0), p->get_move(1));
+    }
+    else {
+      clear();
+      mvprintw(0, 0, "You caught %s but did not have enough space! \n%s was released back into the wild.", npc_cp->get_species(),  npc_cp->get_species());
+      mvprintw(2, 0, "Press any key to continue...");
+      getch();
+    }
+
   }
   else {
     clear();
-    mvprintw(0, 0, "You caught %s but did not have enough space! \n%s was released back into the wild.", npc_cp->get_species(),  npc_cp->get_species());
+    mvprintw(0, 0, "You were defeated by %s", npc_cp->get_species());
     mvprintw(2, 0, "Press any key to continue...");
     getch();
   }
-
-  
   
   io_display();
 
