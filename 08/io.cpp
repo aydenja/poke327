@@ -998,7 +998,7 @@ void io_battle(Character *aggressor, Character *defender)
   exitloop: 
 
   io_display();
-  if(npc->is_done()){
+  if(!world.pc.is_done()){
     mvprintw(0, 0, "Aww, how'd you get so strong?  You and your pokemon must share a special bond!");
   }
   else {
@@ -1134,7 +1134,21 @@ void io_teleport_world(pair_t dest)
   io_teleport_pc(dest);
 }
 
+bool get_escape_odds(Pokemon * pc, Pokemon * npc, int att){
+  double top = (double)pc->effective_stat[stat_speed] * 32.0;
+  double bot = (double)((int)((double)npc->effective_stat[stat_speed]/4.0) % 256);
+  int boost = 30*att;
+  top = top/bot;
+  int final = top +boost;
 
+  if((rand()%100) <= final){
+    return true;
+  }
+  else {
+    return false;
+  }
+
+}
 
 void io_encounter_pokemon()
 {
@@ -1170,13 +1184,16 @@ void io_encounter_pokemon()
   
   mvprintw(0,0,"A wild %s appears!", npc_cp->get_species());
   mvprintw(1,0, "Press any key to continue...");
+  refresh();
   getch();
 
   clear();
   Pokemon *pc_cp = world.pc.get_next();
   bool caught = false;
+  bool escape = false;
+  int att =1;
 
-  while( (npc_cp->get_hp() > 0) && (!world.pc.is_done()) && !caught){
+  while( (npc_cp->get_hp() > 0) && (!world.pc.is_done()) && !caught && !escape){
     
     if(pc_cp->get_hp() == 0){
       clear();
@@ -1283,7 +1300,23 @@ void io_encounter_pokemon()
         }
         break;
       case '3':
-        //TODO ESCAPE PB
+        bool did;
+        did = get_escape_odds(pc_cp,npc_cp,att);
+        if(did == false){
+          clear();
+          mvprintw(0, 0, "You tried to escape but could not get away!");
+          mvprintw(1, 0, "Press any key to continue...");
+          refresh();
+          getch();
+          npc_move = get_npc_move(npc_cp);
+          npc_dam = get_damage(npc_cp, npc_move);
+          case_2_move(npc_dam, npc_move, npc_cp, pc_cp);
+        }
+        else {
+          escape = true;
+        }
+        
+        att++;
         break;
       case '4':
         {
@@ -1334,14 +1367,23 @@ void io_encounter_pokemon()
       clear();
       mvprintw(0, 0, "You caught %s but did not have enough space! \n%s was released back into the wild.", npc_cp->get_species(),  npc_cp->get_species());
       mvprintw(2, 0, "Press any key to continue...");
+      refresh();
       getch();
     }
 
   }
-  else {
+  else if (!escape) {
     clear();
     mvprintw(0, 0, "You were defeated by %s", npc_cp->get_species());
     mvprintw(2, 0, "Press any key to continue...");
+    refresh();
+    getch();
+  }
+  else {
+    clear();
+    mvprintw(0, 0, "You escaped from %s!", npc_cp->get_species());
+    mvprintw(2, 0, "Press any key to continue...");
+    refresh();
     getch();
   }
   
@@ -1433,6 +1475,62 @@ void io_handle_input(pair_t dest)
     case 'm':
       io_list_trainers();
       turn_not_consumed = 1;
+      break;
+    case 'B':
+      int item;
+      item = show_bag();
+      switch (item){
+        case '1':
+          clear();
+          mvprintw(0, 0, "You cant use a pokeball when you are not in a battle!");
+          mvprintw(1, 0, "Press any key to continue...");
+          getch();
+          break;
+        case '2':
+          if(world.pc.num_po >0){
+            std::vector<Pokemon *> l;
+            get_ava_pokemon(l);
+            Pokemon * pc_cp = switch_poke(l);
+            use_potion(pc_cp);
+            world.pc.num_po--;
+          }
+          else{
+            clear();
+            mvprintw(0, 0, "You do not have enough potions!");
+            mvprintw(1, 0, "Press any key to continue...");
+            getch();
+          }
+          break;
+        case '3':
+          
+          if(world.pc.num_rev >0){
+            std::vector<Pokemon *> v;
+            get_oofed_pokemon(v);
+            if((int)v.size() > 0){
+              use_revive(v);
+              world.pc.num_rev--;
+            }
+            else{
+              clear();
+              mvprintw(0, 0, "None of your pokemon have fainted!");
+              mvprintw(1, 0, "Press any key to continue...");
+              getch();
+            }
+            
+          }
+          else{
+            clear();
+            mvprintw(0, 0, "You do not have enough revives!");
+            mvprintw(1, 0, "Press any key to continue...");
+            getch();
+          }
+          break;
+        default:
+          break; 
+      }
+      dest[dim_y] = world.pc.pos[dim_y];
+      dest[dim_x] = world.pc.pos[dim_x];
+      turn_not_consumed = 0;
       break;
     case 'q':
       /* Demonstrate use of the message queue.  You can use this for *
