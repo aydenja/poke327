@@ -22,14 +22,13 @@ enum pokemon_gender {
 class Pokemon {
  private:
   int level;
-  
+  int pokemon_index;
   
   int IV[6];
-  int type_id;
+  
   bool shiny;
   pokemon_gender gender;
  public:
-  int pokemon_index;
   int start_hp;
   int effective_stat[6];
   Pokemon(int level);

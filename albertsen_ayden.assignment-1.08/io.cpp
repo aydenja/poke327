@@ -432,13 +432,6 @@ bool hit (int m){
   }
 }
 
-double get_stab (int ptype, int mtype){
-  if(ptype == mtype){
-    return 1.5;
-  }
-  return 1;
-}
-
 int get_damage(Pokemon *p, int m){
   if(hit(m)){
     //clear();
@@ -453,9 +446,7 @@ int get_damage(Pokemon *p, int m){
     //mvprintw(12, 0, "top after %d", top);
     double crit;
     int tv = p->s->base_stat[stat_speed]/2;
-
-    int move_type = moves[m].type_id;
-    double stab =get_stab(p->pokemon_index, move_type);
+    double stab =1;
     double type =1;
     if ((rand() % 256) < tv){
       crit = 1.5;

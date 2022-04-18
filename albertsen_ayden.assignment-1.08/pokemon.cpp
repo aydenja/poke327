@@ -18,13 +18,6 @@ Pokemon::Pokemon(int level) : level(level)
   // Subtract 1 because array is 1-indexed
   pokemon_species_index = rand() % ((sizeof (species) /
                                      sizeof (species[0])) - 1);
-
-  for (i = 1; i <= 1092; i++) {
-    if (pokemon[i].species_id == pokemon_species_index){
-      pokemon_index = i;
-      break;
-    }
-  }
   s = species + pokemon_species_index;
   
   if (!s->levelup_moves) {

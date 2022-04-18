@@ -31,7 +31,6 @@ move_db moves[845];
 pokemon_species_db species[899];
 experience_db experience[601];
 pokemon_stats_db pokemon_stats[6553];
-pokemon_types_db pokemon_types[1676];
 
 void db_parse(bool print)
 {
@@ -98,30 +97,6 @@ void db_parse(bool print)
              pokemon[i].base_experience, pokemon[i].order, pokemon[i].is_default);
     }
   }
-
-
-
-
-  prefix = (char *) realloc(prefix, prefix_len + strlen("pokemon_types.csv") + 1);
-  strcpy(prefix + prefix_len, "pokemon_types.csv");
-  
-  f = fopen(prefix, "r");
-
-  //No null byte copied here, so prefix is not technically a string anymore.
-  prefix = (char *) realloc(prefix, prefix_len + 1);
-
-  fgets(line, 80, f);
-  
-  for (i = 1; i <= 1675; i++) {
-    fgets(line, 80, f);
-    pokemon_types[i].pokemon_id = atoi(next_token(line, ','));
-    pokemon_types[i].type_id = atoi(next_token(NULL, ','));
-    pokemon_types[i].slot = atoi(next_token(NULL, ','));
-  }  
-
-  fclose(f);
-
-
 
 
   prefix = (char *) realloc(prefix, prefix_len + strlen("moves.csv") + 1);
